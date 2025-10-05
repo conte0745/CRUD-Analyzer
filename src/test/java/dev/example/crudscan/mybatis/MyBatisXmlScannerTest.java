@@ -17,8 +17,7 @@ class MyBatisXmlScannerTest extends TestBase {
 
   private MyBatisXmlScanner scanner;
 
-  @TempDir
-  Path tempDir;
+  @TempDir Path tempDir;
 
   @BeforeEach
   void setUp() {
@@ -109,8 +108,8 @@ class MyBatisXmlScannerTest extends TestBase {
   /** 完全なCRUD操作を含むXMLファイルを作成 */
   private void createCompleteXmlFile() throws Exception {
     Path mapperDir = tempDir.resolve("mapper");
-    copyTestResource("mybatis/MyBatisXmlScannerTest/CompleteMapper.xml", mapperDir,
-        "CompleteMapper.xml");
+    copyTestResource(
+        "mybatis/MyBatisXmlScannerTest/CompleteMapper.xml", mapperDir, "CompleteMapper.xml");
   }
 
   /** 無効なXMLファイルを作成 */
@@ -137,8 +136,11 @@ class MyBatisXmlScannerTest extends TestBase {
     assertThat(result).isNotNull();
 
     // JOINクエリが正常に処理されることを確認
-    SqlMapping joinMapping = result.stream()
-        .filter(m -> m.mapperMethod().equals("findUsersWithPosts")).findFirst().orElse(null);
+    SqlMapping joinMapping =
+        result.stream()
+            .filter(m -> m.mapperMethod().equals("findUsersWithPosts"))
+            .findFirst()
+            .orElse(null);
 
     if (joinMapping != null) {
       assertThat(joinMapping.op()).isEqualTo("SELECT");
@@ -166,8 +168,11 @@ class MyBatisXmlScannerTest extends TestBase {
     assertThat(result).isNotNull();
 
     // CTEクエリが正常に処理されることを確認
-    SqlMapping cteMapping = result.stream()
-        .filter(m -> m.mapperMethod().equals("findUserHierarchy")).findFirst().orElse(null);
+    SqlMapping cteMapping =
+        result.stream()
+            .filter(m -> m.mapperMethod().equals("findUserHierarchy"))
+            .findFirst()
+            .orElse(null);
 
     if (cteMapping != null) {
       assertThat(cteMapping.op()).isEqualTo("SELECT");
@@ -192,11 +197,13 @@ class MyBatisXmlScannerTest extends TestBase {
     assertThat(result).isNotNull();
 
     // 複雑なクエリの処理結果を確認（実装に依存しない形で）
-    assertThatCode(() -> {
-      // スキャン処理が例外なく完了することを確認
-      List<SqlMapping> mappings = scanner.scan();
-      assertThat(mappings).isNotNull();
-    }).doesNotThrowAnyException();
+    assertThatCode(
+            () -> {
+              // スキャン処理が例外なく完了することを確認
+              List<SqlMapping> mappings = scanner.scan();
+              assertThat(mappings).isNotNull();
+            })
+        .doesNotThrowAnyException();
   }
 
   @Test
@@ -208,16 +215,22 @@ class MyBatisXmlScannerTest extends TestBase {
     createSubqueryUnionXmlFile();
 
     // When & Then - 例外が発生しないことを確認
-    assertThatCode(() -> {
-      List<SqlMapping> result = scanner.scan();
-      assertThat(result).isNotNull();
+    assertThatCode(
+            () -> {
+              List<SqlMapping> result = scanner.scan();
+              assertThat(result).isNotNull();
 
-      // 少なくとも何らかのマッピングが抽出されることを確認
-      if (!result.isEmpty()) {
-        assertThat(result).allMatch(mapping -> mapping.mapperClass() != null
-            && mapping.mapperMethod() != null && mapping.op() != null);
-      }
-    }).doesNotThrowAnyException();
+              // 少なくとも何らかのマッピングが抽出されることを確認
+              if (!result.isEmpty()) {
+                assertThat(result)
+                    .allMatch(
+                        mapping ->
+                            mapping.mapperClass() != null
+                                && mapping.mapperMethod() != null
+                                && mapping.op() != null);
+              }
+            })
+        .doesNotThrowAnyException();
   }
 
   @Test
@@ -237,8 +250,12 @@ class MyBatisXmlScannerTest extends TestBase {
     // 実際のXMLファイルから抽出されたマッピングを確認
     if (!result.isEmpty()) {
       // 基本的なマッピング情報の検証
-      assertThat(result).allMatch(mapping -> mapping.mapperClass() != null
-          && mapping.mapperMethod() != null && mapping.op() != null);
+      assertThat(result)
+          .allMatch(
+              mapping ->
+                  mapping.mapperClass() != null
+                      && mapping.mapperMethod() != null
+                      && mapping.op() != null);
 
       // 特定のマッピングが存在することを確認
       boolean hasUserMapper = result.stream().anyMatch(m -> m.mapperClass().contains("UserMapper"));
@@ -288,8 +305,8 @@ class MyBatisXmlScannerTest extends TestBase {
   /** 複雑なJOINクエリを含むXMLファイルを作成 */
   private void createComplexJoinXmlFile() throws Exception {
     Path mapperDir = tempDir.resolve("mapper");
-    copyTestResource("mybatis/MyBatisXmlScannerTest/ComplexJoinMapper.xml", mapperDir,
-        "ComplexJoinMapper.xml");
+    copyTestResource(
+        "mybatis/MyBatisXmlScannerTest/ComplexJoinMapper.xml", mapperDir, "ComplexJoinMapper.xml");
   }
 
   /** CTEクエリを含むXMLファイルを作成 */
@@ -301,7 +318,9 @@ class MyBatisXmlScannerTest extends TestBase {
   /** サブクエリとUNIONを含むXMLファイルを作成 */
   private void createSubqueryUnionXmlFile() throws Exception {
     Path mapperDir = tempDir.resolve("mapper");
-    copyTestResource("mybatis/MyBatisXmlScannerTest/SubqueryUnionMapper.xml", mapperDir,
+    copyTestResource(
+        "mybatis/MyBatisXmlScannerTest/SubqueryUnionMapper.xml",
+        mapperDir,
         "SubqueryUnionMapper.xml");
   }
 }

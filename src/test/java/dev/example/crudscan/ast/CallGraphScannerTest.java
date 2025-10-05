@@ -17,8 +17,7 @@ import org.junit.jupiter.api.io.TempDir;
 class CallGraphScannerTest extends TestBase {
   private CallGraphScanner scanner;
 
-  @TempDir
-  Path tempDir;
+  @TempDir Path tempDir;
 
   @BeforeEach
   void setUp() {
@@ -74,10 +73,14 @@ class CallGraphScannerTest extends TestBase {
     assertThat(result).isNotEmpty();
 
     // UserService -> UserRepository の呼び出し関係を確認
-    boolean hasServiceToRepositoryCall = result.stream()
-        .anyMatch(edge -> edge.fromClass().contains("UserService")
-            && edge.toClass().contains("UserRepository") && edge.fromMethod().equals("findUser")
-            && edge.toMethod().equals("findById"));
+    boolean hasServiceToRepositoryCall =
+        result.stream()
+            .anyMatch(
+                edge ->
+                    edge.fromClass().contains("UserService")
+                        && edge.toClass().contains("UserRepository")
+                        && edge.fromMethod().equals("findUser")
+                        && edge.toMethod().equals("findById"));
 
     assertThat(hasServiceToRepositoryCall).isTrue();
   }
@@ -147,7 +150,8 @@ class CallGraphScannerTest extends TestBase {
     createDirectories(repositoryDir);
 
     // UserService
-    String serviceContent = """
+    String serviceContent =
+        """
         package com.example.service;
 
         import com.example.repository.UserRepository;
@@ -167,7 +171,8 @@ class CallGraphScannerTest extends TestBase {
         """;
 
     // UserRepository
-    String repositoryContent = """
+    String repositoryContent =
+        """
         package com.example.repository;
 
         import org.springframework.stereotype.Repository;
@@ -193,7 +198,8 @@ class CallGraphScannerTest extends TestBase {
     createDirectories(serviceDir);
     createDirectories(repositoryDir);
 
-    String serviceContent = """
+    String serviceContent =
+        """
         package com.example.service;
 
         import com.example.repository.UserRepository;
@@ -220,7 +226,8 @@ class CallGraphScannerTest extends TestBase {
         }
         """;
 
-    String repositoryContent = """
+    String repositoryContent =
+        """
         package com.example.repository;
 
         import org.springframework.stereotype.Repository;
@@ -251,7 +258,8 @@ class CallGraphScannerTest extends TestBase {
     Path controllerDir = tempDir.resolve("com/example/controller");
     createDirectories(controllerDir);
 
-    String content = """
+    String content =
+        """
         package com.example.controller;
 
         import org.springframework.stereotype.Controller;
@@ -273,7 +281,8 @@ class CallGraphScannerTest extends TestBase {
     Path serviceDir = tempDir.resolve("com/example/service");
     createDirectories(serviceDir);
 
-    String content = """
+    String content =
+        """
         package com.example.service;
 
         import org.springframework.stereotype.Service;
@@ -292,7 +301,8 @@ class CallGraphScannerTest extends TestBase {
 
   /** 不正なJavaファイルを作成 */
   private void createInvalidJavaFile() throws Exception {
-    String content = """
+    String content =
+        """
         This is not valid Java code
         public class InvalidService {
             // 不正な構文

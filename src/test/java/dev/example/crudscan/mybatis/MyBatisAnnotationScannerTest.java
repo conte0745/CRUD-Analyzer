@@ -17,8 +17,7 @@ class MyBatisAnnotationScannerTest extends TestBase {
 
   private MyBatisAnnotationScanner scanner;
 
-  @TempDir
-  Path tempDir;
+  @TempDir Path tempDir;
 
   @BeforeEach
   void setUp() {
@@ -116,28 +115,36 @@ class MyBatisAnnotationScannerTest extends TestBase {
   /** アノテーション付きマッパーファイルを作成 */
   private void createAnnotatedMapperFile() throws Exception {
     Path packageDir = tempDir.resolve("com/example/mapper");
-    copyTestResource("mybatis/MyBatisAnnotationScannerTest/UserAnnotationMapper.java.txt",
-        packageDir, "UserAnnotationMapper.java");
+    copyTestResource(
+        "mybatis/MyBatisAnnotationScannerTest/UserAnnotationMapper.java.txt",
+        packageDir,
+        "UserAnnotationMapper.java");
   }
 
   /** 完全なCRUD操作を含むアノテーション付きマッパーファイルを作成 */
   private void createCompleteAnnotatedMapperFile() throws Exception {
     Path packageDir = tempDir.resolve("com/example/mapper");
-    copyTestResource("mybatis/MyBatisAnnotationScannerTest/CompleteAnnotationMapper.java.txt",
-        packageDir, "CompleteAnnotationMapper.java");
+    copyTestResource(
+        "mybatis/MyBatisAnnotationScannerTest/CompleteAnnotationMapper.java.txt",
+        packageDir,
+        "CompleteAnnotationMapper.java");
   }
 
   /** `@Mapper`アノテーションのないクラスファイルを作成 */
   private void createNonMapperFile() throws Exception {
     Path packageDir = tempDir.resolve("com/example/service");
-    copyTestResource("mybatis/MyBatisAnnotationScannerTest/UserService.java.txt", packageDir,
+    copyTestResource(
+        "mybatis/MyBatisAnnotationScannerTest/UserService.java.txt",
+        packageDir,
         "UserService.java");
   }
 
   /** SQLアノテーションのないマッパーファイルを作成 */
   private void createMapperWithoutAnnotations() throws Exception {
     Path packageDir = tempDir.resolve("com/example/mapper");
-    copyTestResource("mybatis/MyBatisAnnotationScannerTest/EmptyMapper.java.txt", packageDir,
+    copyTestResource(
+        "mybatis/MyBatisAnnotationScannerTest/EmptyMapper.java.txt",
+        packageDir,
         "EmptyMapper.java");
   }
 }

@@ -33,6 +33,17 @@ tasks.test {
     // JVMごとのテスト実行も単一に制限
     systemProperty("junit.jupiter.execution.parallel.enabled", "false")
     
+    // テスト出力を表示
+    testLogging {
+        events("passed", "skipped", "failed", "standardOut", "standardError")
+        showStandardStreams = true
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+    
+    // デバッグログを有効化
+    systemProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG")
+    systemProperty("org.slf4j.simpleLogger.log.dev.example.crudscan", "DEBUG")
+    
     // JaCoCoカバレッジ測定を有効化
     finalizedBy(tasks.jacocoTestReport)
 }

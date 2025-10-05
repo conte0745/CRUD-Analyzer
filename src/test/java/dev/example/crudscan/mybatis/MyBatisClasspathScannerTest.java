@@ -22,8 +22,7 @@ class MyBatisClasspathScannerTest extends TestBase {
 
   private MyBatisClasspathScanner scanner;
 
-  @TempDir
-  Path tempDir;
+  @TempDir Path tempDir;
 
   @BeforeEach
   void setUp() {
@@ -352,17 +351,17 @@ class MyBatisClasspathScannerTest extends TestBase {
   /** テスト用のリソース構造を作成 */
   private void createTestResourcesStructure(Path resourcesDir) throws Exception {
     Path mapperDir = resourcesDir.resolve("mapper");
-    copyTestResource("mybatis/ClasspathMyBatisScannerTest/UserMapper.xml", mapperDir,
-        "UserMapper.xml");
+    copyTestResource(
+        "mybatis/ClasspathMyBatisScannerTest/UserMapper.xml", mapperDir, "UserMapper.xml");
   }
 
   /** 複数のテスト用リソース構造を作成 */
   private void createMultipleTestResourcesStructure(Path resourcesDir) throws Exception {
     Path mapperDir = resourcesDir.resolve("mapper");
-    copyTestResource("mybatis/ClasspathMyBatisScannerTest/UserMapper.xml", mapperDir,
-        "UserMapper.xml");
-    copyTestResource("mybatis/ClasspathMyBatisScannerTest/ProductMapper.xml", mapperDir,
-        "ProductMapper.xml");
+    copyTestResource(
+        "mybatis/ClasspathMyBatisScannerTest/UserMapper.xml", mapperDir, "UserMapper.xml");
+    copyTestResource(
+        "mybatis/ClasspathMyBatisScannerTest/ProductMapper.xml", mapperDir, "ProductMapper.xml");
   }
 
   /** 無効なXMLファイルを含むリソース構造を作成 */
@@ -371,7 +370,8 @@ class MyBatisClasspathScannerTest extends TestBase {
     createDirectories(mapperDir);
 
     // 無効なXMLファイルを作成
-    String invalidXmlContent = """
+    String invalidXmlContent =
+        """
         <?xml version="1.0" encoding="UTF-8"?>
         <mapper namespace="com.example.test.InvalidMapper">
             <select id="findAll" resultType="String">
@@ -385,8 +385,8 @@ class MyBatisClasspathScannerTest extends TestBase {
   /** ネストしたディレクトリ構造を作成 */
   private void createNestedResourcesStructure(Path resourcesDir) throws Exception {
     Path nestedDir = resourcesDir.resolve("mapper/nested/deep");
-    copyTestResource("mybatis/ClasspathMyBatisScannerTest/NestedMapper.xml", nestedDir,
-        "NestedMapper.xml");
+    copyTestResource(
+        "mybatis/ClasspathMyBatisScannerTest/NestedMapper.xml", nestedDir, "NestedMapper.xml");
   }
 
   /** 混合ファイルタイプの構造を作成 */
@@ -395,8 +395,8 @@ class MyBatisClasspathScannerTest extends TestBase {
     createDirectories(mapperDir);
 
     // XMLファイル
-    copyTestResource("mybatis/ClasspathMyBatisScannerTest/UserMapper.xml", mapperDir,
-        "UserMapper.xml");
+    copyTestResource(
+        "mybatis/ClasspathMyBatisScannerTest/UserMapper.xml", mapperDir, "UserMapper.xml");
 
     // 非XMLファイル
     Files.writeString(mapperDir.resolve("config.properties"), "key=value");
@@ -416,8 +416,8 @@ class MyBatisClasspathScannerTest extends TestBase {
   /** MyBatis以外のXMLファイルを含むリソース構造を作成 */
   private void createNonMyBatisXmlStructure(Path resourcesDir) throws Exception {
     Path configDir = resourcesDir.resolve("config");
-    copyTestResource("mybatis/ClasspathMyBatisScannerTest/spring-config.xml", configDir,
-        "spring-config.xml");
+    copyTestResource(
+        "mybatis/ClasspathMyBatisScannerTest/spring-config.xml", configDir, "spring-config.xml");
     copyTestResource("mybatis/ClasspathMyBatisScannerTest/pom.xml", resourcesDir, "pom.xml");
   }
 
@@ -475,7 +475,8 @@ class MyBatisClasspathScannerTest extends TestBase {
 
     try (JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile.toFile()))) {
       // 無効なXMLファイル
-      String invalidXmlContent = """
+      String invalidXmlContent =
+          """
           <?xml version="1.0" encoding="UTF-8"?>
           <mapper namespace="com.example.jar.InvalidMapper">
               <select id="findInvalid" resultType="String">

@@ -62,7 +62,8 @@ public class ControllerScanner {
   private final Path sourceDir;
 
   /** 対象となるサービスクラスのサフィックス */
-  private static final Set<String> TARGET_SERVICE_SUFFIXES = Set.of("Service", "Mapper", "Dao");
+  private static final Set<String> TARGET_SERVICE_SUFFIXES =
+      Set.of("Service", "Mapper", "Dao", "View");
 
   /**
    * ControllerScannerを構築

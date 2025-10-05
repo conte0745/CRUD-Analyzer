@@ -18,8 +18,7 @@ class BatchJobScannerTest extends TestBase {
 
   private BatchJobScanner scanner;
 
-  @TempDir
-  Path tempDir;
+  @TempDir Path tempDir;
 
   @BeforeEach
   void setUp() {
@@ -95,8 +94,9 @@ class BatchJobScannerTest extends TestBase {
     assertThat(jobNames).containsExactlyInAnyOrder("DataImportJob", "ReportGenerationJob");
 
     List<String> classNames = result.stream().map(BatchJob::className).toList();
-    assertThat(classNames).containsExactlyInAnyOrder("com.example.batch.DataImportJob",
-        "com.example.batch.ReportGenerationJob");
+    assertThat(classNames)
+        .containsExactlyInAnyOrder(
+            "com.example.batch.DataImportJob", "com.example.batch.ReportGenerationJob");
   }
 
   @Test
@@ -157,7 +157,8 @@ class BatchJobScannerTest extends TestBase {
     Path packageDir = tempDir.resolve("com/example/batch");
     createDirectories(packageDir);
 
-    String content = """
+    String content =
+        """
         package com.example.batch;
 
         import org.springframework.context.annotation.Configuration;
@@ -176,7 +177,8 @@ class BatchJobScannerTest extends TestBase {
     Path packageDir = tempDir.resolve("com/example/batch");
     createDirectories(packageDir);
 
-    String content1 = """
+    String content1 =
+        """
         package com.example.batch;
 
         import org.springframework.context.annotation.Configuration;
@@ -187,7 +189,8 @@ class BatchJobScannerTest extends TestBase {
         }
         """;
 
-    String content2 = """
+    String content2 =
+        """
         package com.example.batch;
 
         import org.springframework.context.annotation.Configuration;
@@ -207,7 +210,8 @@ class BatchJobScannerTest extends TestBase {
     Path packageDir = tempDir.resolve("com/example/config");
     createDirectories(packageDir);
 
-    String content = """
+    String content =
+        """
         package com.example.config;
 
         import org.springframework.context.annotation.Configuration;
@@ -226,7 +230,8 @@ class BatchJobScannerTest extends TestBase {
     Path packageDir = tempDir.resolve("com/example/batch");
     createDirectories(packageDir);
 
-    String content = """
+    String content =
+        """
         package com.example.batch;
 
         import org.springframework.context.annotation.Configuration;
@@ -242,7 +247,8 @@ class BatchJobScannerTest extends TestBase {
 
   /** パッケージ宣言なしのJobファイルを作成 */
   private void createNoPackageJobFile() throws Exception {
-    String content = """
+    String content =
+        """
         import org.springframework.context.annotation.Configuration;
 
         @Configuration("SimpleJob")
@@ -256,7 +262,8 @@ class BatchJobScannerTest extends TestBase {
 
   /** 不正なJavaファイルを作成 */
   private void createInvalidJavaFile() throws Exception {
-    String content = """
+    String content =
+        """
         This is not valid Java code
         @Configuration("InvalidJob")
         public class InvalidJob {

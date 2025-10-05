@@ -19,8 +19,7 @@ class ControllerScannerTest extends TestBase {
 
   private ControllerScanner scanner;
 
-  @TempDir
-  Path tempDir;
+  @TempDir Path tempDir;
 
   @BeforeEach
   void setUp() {
@@ -52,8 +51,9 @@ class ControllerScannerTest extends TestBase {
     assertThat(endpoints).hasSizeGreaterThanOrEqualTo(1);
 
     // エンドポイントが正しく抽出されることを確認
-    boolean hasGetEndpoint = endpoints.stream()
-        .anyMatch(e -> e.url().contains("/hello") && e.httpMethod().equals("GET"));
+    boolean hasGetEndpoint =
+        endpoints.stream()
+            .anyMatch(e -> e.url().contains("/hello") && e.httpMethod().equals("GET"));
     assertThat(hasGetEndpoint).isTrue();
   }
 
@@ -88,7 +88,8 @@ class ControllerScannerTest extends TestBase {
     Path packageDir = tempDir.resolve("com/example/test");
     Files.createDirectories(packageDir);
 
-    String controllerContent = """
+    String controllerContent =
+        """
         package com.example.test;
 
         import org.springframework.web.bind.annotation.*;
@@ -117,7 +118,8 @@ class ControllerScannerTest extends TestBase {
     Path packageDir = tempDir.resolve("com/example/test");
     Files.createDirectories(packageDir);
 
-    String serviceContent = """
+    String serviceContent =
+        """
         package com.example.test;
 
         import org.springframework.stereotype.Service;

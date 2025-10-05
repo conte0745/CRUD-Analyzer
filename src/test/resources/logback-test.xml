@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!-- コンソール出力アペンダー -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  
+  <!-- CRUD Analyzer専用ロガー設定（テスト用） -->
+  <logger name="dev.example.crudscan" level="DEBUG" additivity="false">
+    <appender-ref ref="STDOUT" />
+  </logger>
+  
+  <!-- デフォルトログレベル -->
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

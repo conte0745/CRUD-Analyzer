@@ -52,7 +52,7 @@ public class CallGraphScanner {
 
   /** 解析対象のクラスサフィックス */
   private static final Set<String> TARGET_CLASS_SUFFIXES =
-      Set.of("Service", "Repository", "Mapper", "Dao");
+      Set.of("Service", "Repository", "Mapper", "Dao", "View");
 
   /** 解析対象のソースディレクトリ */
   private final Path sourceDir;

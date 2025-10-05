@@ -78,9 +78,10 @@ class MyBatisXmlParserFactoryTest extends TestBase {
     // When & Then
     InputStream inputStream = new ByteArrayInputStream(invalidXml.getBytes());
 
-    assertThatThrownBy(() -> builder.parse(inputStream)).isInstanceOf(Exception.class); // SAXException
-                                                                                        // or
-                                                                                        // similar
+    assertThatThrownBy(() -> builder.parse(inputStream))
+        .isInstanceOf(Exception.class); // SAXException
+    // or
+    // similar
   }
 
   @Test

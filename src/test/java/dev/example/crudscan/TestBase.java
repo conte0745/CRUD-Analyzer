@@ -80,8 +80,8 @@ public class TestBase {
    * @param jarDir JARファイルディレクトリ
    * @return モック化されたAnalyzerConfiguration
    */
-  protected AnalyzerConfiguration createMockAnalyzerConfigurationWithJarPath(Path tempDir,
-      Path jarDir) {
+  protected AnalyzerConfiguration createMockAnalyzerConfigurationWithJarPath(
+      Path tempDir, Path jarDir) {
     AnalyzerConfiguration mockConfig = mock(AnalyzerConfiguration.class);
 
     // JARパスを返すようにモック設定
