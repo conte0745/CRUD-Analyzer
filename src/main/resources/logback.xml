@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!-- コンソール出力アペンダー（カラー対応） -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level){FATAL=red blink, ERROR=red, WARN=yellow, INFO=green, DEBUG=blue, TRACE=magenta} %cyan(%logger{36}) - %highlight(%msg){FATAL=red blink, ERROR=red, WARN=yellow, INFO=green, DEBUG=blue, TRACE=magenta}%n</pattern>
+    </encoder>
+  </appender>
+  
+  <!-- ファイル出力アペンダー（デバッグ用） -->
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>logs/crud-analyzer.log</file>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  
+  <!-- CRUD Analyzer専用ロガー設定 -->
+  <logger name="dev.example.crudscan" level="DEBUG" additivity="false">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
+  </logger>
+  
+  <!-- SQL解析の詳細ログ（通常は無効） -->
+  <logger name="dev.example.crudscan.sql" level="WARN" additivity="false">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
+  </logger>
+  
+  <!-- デフォルトログレベル -->
+  <root level="WARN">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

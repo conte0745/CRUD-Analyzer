@@ -1,0 +1,94 @@
+# ========================================
+# CRUD Analyzer 設定ファイル
+# ========================================
+# このファイルでCRUD Analyzerの動作を制御できます。
+# 設定を変更した後は、アプリケーションを再起動してください。
+
+# ========================================
+# 基本ディレクトリ設定
+# ========================================
+
+# Javaソースコードが格納されているディレクトリの絶対パス
+# Controller、Service、Repository、Mapperクラスを検索します
+src.directory=/springboot/app/src/main/java
+
+# リソースファイルが格納されているディレクトリの絶対パス
+# MyBatis XMLマッピングファイルを検索します
+resources.directory=/springboot/app/src/main/resources
+
+# 解析結果を出力するディレクトリの絶対パス
+# Markdown、PlantUML、JSONファイルが生成されます
+output.directory=/springboot/app/docs
+
+# ========================================
+# 外部JAR設定
+# ========================================
+
+# 外部JARファイルのパス（複数指定可能）
+# パス区切り文字: Unix/Linux/Mac = ":", Windows = ";"
+# 例: /opt/mybatis-libs;/home/user/external-jars
+# 空の場合は外部JARファイルを読み込みません（プロジェクト内のファイルのみ解析）
+jar.paths=
+
+# ========================================
+# ログ設定
+# ========================================
+
+# ログレベル設定
+# 設定可能な値: TRACE, DEBUG, INFO, WARN, ERROR
+# DEBUG: 詳細な解析情報を出力（開発時推奨）
+# INFO: 基本的な進行状況を出力（本番推奨）
+log.level=INFO
+
+# ========================================
+# 出力形式制御
+# ========================================
+
+# Markdownファイルの出力を有効にするか
+# true: CRUDマトリクスをMarkdown形式で出力
+# false: Markdown出力を無効化
+output.markdown=true
+
+# PlantUMLファイルの出力を有効にするか
+# true: CRUD関係図をPlantUML形式で出力
+# false: PlantUML出力を無効化
+output.plantuml=true
+
+# JSONファイルの出力を有効にするか
+# true: 解析結果の詳細データをJSON形式で出力
+# false: JSON出力を無効化
+output.json=true
+
+# ========================================
+# 解析オプション
+# ========================================
+
+# MyBatis Generatorで生成されたコードを解析対象に含めるか
+# true: 自動生成されたMapperクラスも解析対象とする
+# false: 手動作成されたコードのみを解析対象とする
+analysis.include.generated=true
+
+# 動的SQLを解析対象に含めるか
+# true: <if>, <choose>, <where>等の動的SQL要素も解析
+# false: 静的なSQL文のみを解析対象とする
+analysis.include.dynamic.sql=true
+
+# 呼び出し関係の解析最大深度
+# Controller → Service → Repository → Mapper の呼び出しチェーンを
+# どこまで深く追跡するかを指定（循環参照対策）
+# 推奨値: 10-1000（プロジェクトの複雑さに応じて調整）
+analysis.max.depth=1000
+
+# ========================================
+# パッケージフィルタ
+# ========================================
+
+# 解析対象に含めるパッケージ（カンマ区切り）
+# 空の場合は全パッケージを対象とします
+# 例: com.example.controller,com.example.service
+include.packages=
+
+# 解析対象から除外するパッケージ（カンマ区切り）
+# テストコードや例示コードを除外する際に使用
+# 例: test,example,mock,demo
+exclude.packages=test,example
