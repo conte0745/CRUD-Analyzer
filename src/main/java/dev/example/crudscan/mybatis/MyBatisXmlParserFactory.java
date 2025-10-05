@@ -41,7 +41,7 @@ public class MyBatisXmlParserFactory {
    * @throws ParserConfigurationException パーサー設定エラー
    */
   public static DocumentBuilder createMyBatisDocumentBuilder() throws ParserConfigurationException {
-    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); // ignore
     setMyBatisSafeXmlFeatures(dbf);
     return dbf.newDocumentBuilder();
   }

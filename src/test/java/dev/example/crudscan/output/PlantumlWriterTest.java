@@ -48,8 +48,7 @@ class PlantumlWriterTest extends UnitTestBase {
     // Then
     assertThat(outputFile).exists();
     String content = Files.readString(outputFile);
-    assertThat(content).startsWith("@startuml");
-    assertThat(content).endsWith("@enduml\n");
+    assertThat(content).startsWith("@startuml").endsWith("@enduml\n");
   }
 
   @Test
@@ -66,13 +65,14 @@ class PlantumlWriterTest extends UnitTestBase {
     assertThat(outputFile).exists();
     String content = Files.readString(outputFile);
 
-    assertThat(content).startsWith("@startuml");
-    assertThat(content).endsWith("@enduml\n");
-    assertThat(content).contains("actor User");
-    assertThat(content).contains("UserController");
-    assertThat(content).contains("GET /users");
-    assertThat(content).contains("users");
-    assertThat(content).contains("SELECT");
+    assertThat(content)
+        .startsWith("@startuml")
+        .endsWith("@enduml\n")
+        .contains("actor User")
+        .contains("UserController")
+        .contains("GET /users")
+        .contains("users")
+        .contains("SELECT");
   }
 
   @Test
@@ -91,11 +91,12 @@ class PlantumlWriterTest extends UnitTestBase {
     assertThat(outputFile).exists();
     String content = Files.readString(outputFile);
 
-    assertThat(content).startsWith("@startuml");
-    assertThat(content).endsWith("@enduml\n");
-    assertThat(content).contains("participant Scheduler");
-    assertThat(content).contains("DataProcessJob");
-    assertThat(content).contains("trigger");
+    assertThat(content)
+        .startsWith("@startuml")
+        .endsWith("@enduml\n")
+        .contains("participant Scheduler")
+        .contains("DataProcessJob")
+        .contains("trigger");
   }
 
   @Test
@@ -114,12 +115,13 @@ class PlantumlWriterTest extends UnitTestBase {
     assertThat(outputFile).exists();
     String content = Files.readString(outputFile);
 
-    assertThat(content).startsWith("@startuml");
-    assertThat(content).endsWith("@enduml\n");
-    assertThat(content).contains("actor User");
-    assertThat(content).contains("participant Scheduler");
-    assertThat(content).contains("UserController");
-    assertThat(content).contains("DataProcessJob");
+    assertThat(content)
+        .startsWith("@startuml")
+        .endsWith("@enduml\n")
+        .contains("actor User")
+        .contains("participant Scheduler")
+        .contains("UserController")
+        .contains("DataProcessJob");
   }
 
   @Test

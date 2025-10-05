@@ -49,8 +49,8 @@ import org.xml.sax.SAXException;
  * List<SqlMapping> mappings = scanner.scan();
  *
  * for (SqlMapping mapping : mappings) {
- *   System.out.println(mapping.mapperClass() + "#" + mapping.mapperMethod() +
- *       " -> " + mapping.op() + " " + mapping.tables());
+ *   System.out.println(mapping.mapperClass() + "#" + mapping.mapperMethod() + " -> " + mapping.op()
+ *       + " " + mapping.tables());
  * }
  * }</pre>
  *
@@ -123,7 +123,6 @@ public class MyBatisXmlScanner {
       logger.info("MyBatisXmlScanner: 検出されたXMLファイル数 - {}", xmlFiles.size());
       return xmlFiles;
     } catch (IOException ex) {
-      logger.error("MyBatisXmlScanner エラー: {}", ex.getMessage(), ex);
       throw new IOException("MyBatisXMLスキャンに失敗しました: " + ex.getMessage(), ex);
     }
   }

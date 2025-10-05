@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.*;
@@ -25,8 +25,21 @@ import org.w3c.dom.*;
  *   <li>クラスパス上のリソース
  * </ul>
  */
-public class ClasspathMyBatisScanner {
-  private static final Logger logger = LoggerFactory.getLogger(ClasspathMyBatisScanner.class);
+public class MyBatisClasspathScanner {
+  private static final Logger logger = LoggerFactory.getLogger(MyBatisClasspathScanner.class);
+
+  // 定数の抽出
+  private static final String XML_EXTENSION = ".xml";
+  private static final String JAR_EXTENSION = ".jar";
+  private static final List<String> SQL_TAGS = List.of("select", "insert", "update", "delete");
+  private static final String RESOURCES_PATH = "src/main/resources";
+
+  // ファイルフィルタ
+  private static final Predicate<Path> XML_FILE_FILTER =
+      path -> path.toString().endsWith(XML_EXTENSION);
+  private static final Predicate<Path> JAR_FILE_FILTER =
+      path -> path.toString().endsWith(JAR_EXTENSION);
+
   private final SqlClassifier classifier = new SqlClassifier();
   private final Path projectRoot;
   private final AnalyzerConfiguration config;
@@ -36,7 +49,7 @@ public class ClasspathMyBatisScanner {
    *
    * @param projectRoot プロジェクトルートディレクトリ
    */
-  public ClasspathMyBatisScanner(Path projectRoot) {
+  public MyBatisClasspathScanner(Path projectRoot) {
     this.projectRoot = projectRoot;
     this.config = new AnalyzerConfiguration();
   }
@@ -47,7 +60,7 @@ public class ClasspathMyBatisScanner {
    * @param projectRoot プロジェクトルートディレクトリ
    * @param config アナライザー設定
    */
-  public ClasspathMyBatisScanner(Path projectRoot, AnalyzerConfiguration config) {
+  public MyBatisClasspathScanner(Path projectRoot, AnalyzerConfiguration config) {
     this.projectRoot = projectRoot;
     this.config = config;
   }
@@ -73,21 +86,13 @@ public class ClasspathMyBatisScanner {
 
   /** プロジェクト内のresourcesディレクトリをスキャン */
   private void scanProjectResources(List<SqlMapping> list) throws IOException {
-    Path resourcesDir = projectRoot.resolve("src/main/resources");
+    Path resourcesDir = projectRoot.resolve(RESOURCES_PATH);
     if (!Files.exists(resourcesDir)) {
       logger.debug("resourcesディレクトリが存在しません: {}", resourcesDir);
       return;
     }
 
-    try (var stream = Files.walk(resourcesDir)) {
-      for (Path xmlFile : stream.filter(f -> f.toString().endsWith(".xml")).toList()) {
-        try {
-          scanXmlFile(xmlFile, list, "project");
-        } catch (Exception ex) {
-          logger.debug("プロジェクトXMLファイルの解析をスキップ: {}", xmlFile.getFileName());
-        }
-      }
-    }
+    scanXmlFilesInDirectory(resourcesDir, list, "project");
   }
 
   /** 依存JARファイル内のXMLファイルをスキャン */
@@ -117,51 +122,88 @@ public class ClasspathMyBatisScanner {
       return;
     }
 
-    try (var stream = Files.walk(directory)) {
-      for (Path jarPath : stream.filter(f -> f.toString().endsWith(".jar")).toList()) {
-        scanJarFile(jarPath, list);
-      }
-    } catch (IOException ex) {
-      logger.error("JARディレクトリのスキャンに失敗: {}", directory);
-    }
+    executeWithErrorHandling(
+        () -> {
+          try (var stream = Files.walk(directory)) {
+            stream.filter(JAR_FILE_FILTER).forEach(jarPath -> scanJarFile(jarPath, list));
+          }
+        },
+        "JARディレクトリのスキャンに失敗: " + directory);
   }
 
   /** 個別のJARファイル内のXMLファイルをスキャン */
   private void scanJarFile(Path jarPath, List<SqlMapping> list) {
-    try (JarFile jarFile = new JarFile(jarPath.toFile())) {
-      Enumeration<JarEntry> entries = jarFile.entries();
-
-      while (entries.hasMoreElements()) {
-        JarEntry entry = entries.nextElement();
-
-        if (entry.getName().endsWith(".xml") && !entry.isDirectory()) {
-          try (InputStream inputStream = jarFile.getInputStream(entry)) {
-            scanXmlInputStream(inputStream, list, "jar:" + jarPath.getFileName());
-          } catch (Exception ex) {
-            logger.debug("JAR内XMLファイルの解析をスキップ: {} in {}", entry.getName(), jarPath.getFileName());
+    executeWithErrorHandling(
+        () -> {
+          try (JarFile jarFile = new JarFile(jarPath.toFile())) {
+            Collections.list(jarFile.entries()).stream()
+                .filter(entry -> entry.getName().endsWith(XML_EXTENSION) && !entry.isDirectory())
+                .forEach(entry -> parseJarEntryWithErrorHandling(jarFile, entry, list, jarPath));
           }
-        }
-      }
-    } catch (IOException ex) {
-      logger.debug("JARファイルの読み込みに失敗: {}", jarPath.getFileName());
+        },
+        "JARファイルの読み込みに失敗: " + jarPath.getFileName());
+  }
+
+  /** JAR内XMLエントリ解析（エラーハンドリング付き） */
+  private void parseJarEntryWithErrorHandling(
+      JarFile jarFile, JarEntry entry, List<SqlMapping> list, Path jarPath) {
+    executeWithErrorHandling(
+        () -> {
+          try (InputStream inputStream = jarFile.getInputStream(entry)) {
+            parseXmlInputStream(inputStream, list, "jar:" + jarPath.getFileName());
+          }
+        },
+        "JAR内XMLファイルの解析をスキップ: " + entry.getName() + " in " + jarPath.getFileName());
+  }
+
+  /** 共通エラーハンドリング */
+  private void executeWithErrorHandling(ThrowingRunnable action, String errorMessage) {
+    try {
+      action.run();
+    } catch (Exception ex) {
+      logger.debug(errorMessage);
     }
   }
 
-  /** ファイルシステム上のXMLファイルを解析 */
-  private void scanXmlFile(Path xmlFile, List<SqlMapping> list, String source) throws Exception {
-    var dbf = DocumentBuilderFactory.newInstance();
-    setSecureXmlFeatures(dbf);
-    var doc = dbf.newDocumentBuilder().parse(xmlFile.toFile());
-    processXmlDocument(doc, list, source + ":" + xmlFile.getFileName());
+  /** 例外を投げる可能性のあるRunnable */
+  @FunctionalInterface
+  private interface ThrowingRunnable {
+    void run() throws Exception;
   }
 
-  /** InputStreamからXMLファイルを解析 */
-  private void scanXmlInputStream(InputStream inputStream, List<SqlMapping> list, String source)
-      throws Exception {
-    var dbf = DocumentBuilderFactory.newInstance();
-    setSecureXmlFeatures(dbf);
-    var doc = dbf.newDocumentBuilder().parse(inputStream);
+  /** 指定ディレクトリ内のXMLファイルをスキャン */
+  private void scanXmlFilesInDirectory(Path directory, List<SqlMapping> list, String source)
+      throws IOException {
+    try (var stream = Files.walk(directory)) {
+      stream
+          .filter(XML_FILE_FILTER)
+          .forEach(xmlFile -> parseXmlFileWithErrorHandling(xmlFile, list, source));
+    }
+  }
+
+  /** XMLファイル解析（エラーハンドリング付き） */
+  private void parseXmlFileWithErrorHandling(Path xmlFile, List<SqlMapping> list, String source) {
+    executeWithErrorHandling(
+        () -> parseXmlFile(xmlFile, list, source + ":" + xmlFile.getFileName()),
+        "XMLファイルの解析をスキップ: " + xmlFile.getFileName());
+  }
+
+  /** XMLファイル解析の統一メソッド */
+  private void parseXmlFile(Path xmlFile, List<SqlMapping> list, String source) throws Exception {
+    Document doc = createSecureDocumentBuilder().parse(xmlFile.toFile());
     processXmlDocument(doc, list, source);
+  }
+
+  /** InputStreamからXML解析の統一メソッド */
+  private void parseXmlInputStream(InputStream inputStream, List<SqlMapping> list, String source)
+      throws Exception {
+    Document doc = createSecureDocumentBuilder().parse(inputStream);
+    processXmlDocument(doc, list, source);
+  }
+
+  /** セキュアなDocumentBuilderを作成 */
+  private javax.xml.parsers.DocumentBuilder createSecureDocumentBuilder() throws Exception {
+    return MyBatisXmlParserFactory.createMyBatisDocumentBuilder();
   }
 
   /** XMLドキュメントを処理してSQLマッピングを抽出 */
@@ -184,7 +226,7 @@ public class ClasspathMyBatisScanner {
         Element e = (Element) n;
         String tag = e.getNodeName();
 
-        if (List.of("select", "insert", "update", "delete").contains(tag)) {
+        if (SQL_TAGS.contains(tag)) {
           String id = e.getAttribute("id");
           String rawSql = e.getTextContent();
 
@@ -212,19 +254,5 @@ public class ClasspathMyBatisScanner {
             || root.getElementsByTagName("insert").getLength() > 0
             || root.getElementsByTagName("update").getLength() > 0
             || root.getElementsByTagName("delete").getLength() > 0);
-  }
-
-  /** XXE対策: DocumentBuilderFactoryに安全な設定を適用 */
-  private static void setSecureXmlFeatures(DocumentBuilderFactory dbf) {
-    try {
-      dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
-      dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-      dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-      dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-      dbf.setXIncludeAware(false);
-      dbf.setExpandEntityReferences(false);
-    } catch (Exception ignore) {
-      // セキュリティ設定失敗時は無視（安全性優先）
-    }
   }
 }

@@ -6,8 +6,8 @@ import dev.example.crudscan.ast.ControllerScanner;
 import dev.example.crudscan.ast.ControllerScanner.ScanResult;
 import dev.example.crudscan.config.AnalyzerConfiguration;
 import dev.example.crudscan.model.Models.*;
-import dev.example.crudscan.mybatis.ClasspathMyBatisScanner;
 import dev.example.crudscan.mybatis.MyBatisAnnotationScanner;
+import dev.example.crudscan.mybatis.MyBatisClasspathScanner;
 import dev.example.crudscan.mybatis.MyBatisGeneratorScanner;
 import dev.example.crudscan.mybatis.MyBatisXmlScanner;
 import dev.example.crudscan.output.*;
@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * <pre>{@code
  * // 設定ファイルから自動読み込み
  * CrudAnalyzer analyzer = new CrudAnalyzer();
- * analyzer.analyze();  // 引数不要
+ * analyzer.analyze(); // 引数不要
  * }</pre>
  *
  * @author CRUD Analyzer Team
@@ -130,7 +130,7 @@ public class CrudAnalyzer {
 
     // クラスパス（JAR含む）からのMyBatis XMLスキャンも追加
     var analyzerConfig = new AnalyzerConfiguration();
-    var classpathSqls = new ClasspathMyBatisScanner(out, analyzerConfig).scan();
+    var classpathSqls = new MyBatisClasspathScanner(out, analyzerConfig).scan();
     sqls.addAll(classpathSqls);
     logger.debug("クラスパス SQLマッピング数: {}", classpathSqls.size());
 

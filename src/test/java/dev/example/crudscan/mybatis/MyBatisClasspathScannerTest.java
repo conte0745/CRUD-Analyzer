@@ -20,20 +20,20 @@ import org.junit.jupiter.api.io.TempDir;
 @DisplayName("MyBatisClasspathScanner機能のテスト")
 class MyBatisClasspathScannerTest extends UnitTestBase {
 
-  private ClasspathMyBatisScanner scanner;
+  private MyBatisClasspathScanner scanner;
 
   @TempDir Path tempDir;
 
   @BeforeEach
   void setUp() {
-    scanner = new ClasspathMyBatisScanner(tempDir);
+    scanner = new MyBatisClasspathScanner(tempDir);
   }
 
   @Test
   @DisplayName("コンストラクタでインスタンスが正常に作成されること")
   void testConstructor_ShouldCreateInstance() {
     // When
-    ClasspathMyBatisScanner newScanner = new ClasspathMyBatisScanner(tempDir);
+    MyBatisClasspathScanner newScanner = new MyBatisClasspathScanner(tempDir);
 
     // Then
     assertThat(newScanner).isNotNull();
@@ -81,7 +81,7 @@ class MyBatisClasspathScannerTest extends UnitTestBase {
     var config = new dev.example.crudscan.config.AnalyzerConfiguration();
 
     // When
-    ClasspathMyBatisScanner newScanner = new ClasspathMyBatisScanner(tempDir, config);
+    MyBatisClasspathScanner newScanner = new MyBatisClasspathScanner(tempDir, config);
 
     // Then
     assertThat(newScanner).isNotNull();
@@ -92,7 +92,7 @@ class MyBatisClasspathScannerTest extends UnitTestBase {
   void testScan_WithNonExistentResourcesDir_ShouldHandleGracefully() throws Exception {
     // Given
     Path nonExistentProject = tempDir.resolve("non-existent-project");
-    ClasspathMyBatisScanner nonExistentScanner = new ClasspathMyBatisScanner(nonExistentProject);
+    MyBatisClasspathScanner nonExistentScanner = new MyBatisClasspathScanner(nonExistentProject);
 
     // When
     List<SqlMapping> result = nonExistentScanner.scan();
@@ -198,7 +198,7 @@ class MyBatisClasspathScannerTest extends UnitTestBase {
 
     // カスタム設定でJARパスを指定
     AnalyzerConfiguration customConfig = createCustomConfigWithJarPath(jarDir);
-    ClasspathMyBatisScanner jarScanner = new ClasspathMyBatisScanner(tempDir, customConfig);
+    MyBatisClasspathScanner jarScanner = new MyBatisClasspathScanner(tempDir, customConfig);
 
     // When
     List<SqlMapping> result = jarScanner.scan();
@@ -218,7 +218,7 @@ class MyBatisClasspathScannerTest extends UnitTestBase {
     createTestJarFile(jarDir, "common-utils-2.0.jar");
 
     AnalyzerConfiguration customConfig = createCustomConfigWithJarPath(jarDir);
-    ClasspathMyBatisScanner jarScanner = new ClasspathMyBatisScanner(tempDir, customConfig);
+    MyBatisClasspathScanner jarScanner = new MyBatisClasspathScanner(tempDir, customConfig);
 
     // When
     List<SqlMapping> result = jarScanner.scan();
@@ -234,7 +234,7 @@ class MyBatisClasspathScannerTest extends UnitTestBase {
     // Given
     Path nonExistentJarDir = tempDir.resolve("non-existent-lib");
     AnalyzerConfiguration customConfig = createCustomConfigWithJarPath(nonExistentJarDir);
-    ClasspathMyBatisScanner jarScanner = new ClasspathMyBatisScanner(tempDir, customConfig);
+    MyBatisClasspathScanner jarScanner = new MyBatisClasspathScanner(tempDir, customConfig);
 
     // When
     List<SqlMapping> result = jarScanner.scan();
@@ -253,7 +253,7 @@ class MyBatisClasspathScannerTest extends UnitTestBase {
     createInvalidJarFile(jarDir);
 
     AnalyzerConfiguration customConfig = createCustomConfigWithJarPath(jarDir);
-    ClasspathMyBatisScanner jarScanner = new ClasspathMyBatisScanner(tempDir, customConfig);
+    MyBatisClasspathScanner jarScanner = new MyBatisClasspathScanner(tempDir, customConfig);
 
     // When
     List<SqlMapping> result = jarScanner.scan();
@@ -272,7 +272,7 @@ class MyBatisClasspathScannerTest extends UnitTestBase {
     createJarFileWithInvalidXml(jarDir);
 
     AnalyzerConfiguration customConfig = createCustomConfigWithJarPath(jarDir);
-    ClasspathMyBatisScanner jarScanner = new ClasspathMyBatisScanner(tempDir, customConfig);
+    MyBatisClasspathScanner jarScanner = new MyBatisClasspathScanner(tempDir, customConfig);
 
     // When
     List<SqlMapping> result = jarScanner.scan();
@@ -296,7 +296,7 @@ class MyBatisClasspathScannerTest extends UnitTestBase {
     createTestJarFile(jarDir, "other-library.jar");
 
     AnalyzerConfiguration customConfig = createCustomConfigWithJarPath(jarDir);
-    ClasspathMyBatisScanner jarScanner = new ClasspathMyBatisScanner(tempDir, customConfig);
+    MyBatisClasspathScanner jarScanner = new MyBatisClasspathScanner(tempDir, customConfig);
 
     // When
     List<SqlMapping> result = jarScanner.scan();
@@ -318,7 +318,7 @@ class MyBatisClasspathScannerTest extends UnitTestBase {
     createJarFileWithMixedContent(jarDir);
 
     AnalyzerConfiguration customConfig = createCustomConfigWithJarPath(jarDir);
-    ClasspathMyBatisScanner jarScanner = new ClasspathMyBatisScanner(tempDir, customConfig);
+    MyBatisClasspathScanner jarScanner = new MyBatisClasspathScanner(tempDir, customConfig);
 
     // When
     List<SqlMapping> result = jarScanner.scan();
@@ -338,14 +338,13 @@ class MyBatisClasspathScannerTest extends UnitTestBase {
     // JARファイルを作成しない（空のディレクトリ）
 
     AnalyzerConfiguration customConfig = createCustomConfigWithJarPath(jarDir);
-    ClasspathMyBatisScanner jarScanner = new ClasspathMyBatisScanner(tempDir, customConfig);
+    MyBatisClasspathScanner jarScanner = new MyBatisClasspathScanner(tempDir, customConfig);
 
     // When
     List<SqlMapping> result = jarScanner.scan();
 
     // Then
-    assertThat(result).isNotNull();
-    assertThat(result).isEmpty();
+    assertThat(result).isNotNull().isEmpty();
     assertThatCode(jarScanner::scan).doesNotThrowAnyException();
   }
 

@@ -119,7 +119,7 @@ class MyBatisGeneratorScannerTest extends UnitTestBase {
 
   @Test
   @DisplayName("無効なXMLファイルが適切に処理されること")
-  void testScan_WithInvalidXml_ShouldHandleGracefully() throws Exception {
+  void testScan_WithInvalidXml_ShouldHandleGracefully() {
     // Given - 空のディレクトリでも正常に動作することを確認
     // When & Then
     assertThatCode(() -> scanner.scan()).doesNotThrowAnyException();

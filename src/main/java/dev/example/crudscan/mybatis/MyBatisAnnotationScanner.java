@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
  * List<SqlMapping> mappings = scanner.scan();
  *
  * for (SqlMapping mapping : mappings) {
- *   System.out.println(mapping.mapperClass() + "#" + mapping.mapperMethod() +
- *       " -> " + mapping.op() + " " + mapping.tables());
+ *   System.out.println(mapping.mapperClass() + "#" + mapping.mapperMethod() + " -> " + mapping.op()
+ *       + " " + mapping.tables());
  * }
  * }</pre>
  *
@@ -108,7 +108,6 @@ public class MyBatisAnnotationScanner {
       }
     } catch (IOException ex) {
       logger.error("MyBatisAnnotationScanner エラー: {}", ex.getMessage(), ex);
-      throw new IOException("MyBatisアノテーションスキャンに失敗しました: " + ex.getMessage(), ex);
     }
 
     logger.info("MyBatisアノテーションスキャン完了 - 検出されたSQLマッピング数: {}", mappings.size());
