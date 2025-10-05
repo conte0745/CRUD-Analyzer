@@ -215,9 +215,9 @@ class IntegrationTest extends TestBase {
     String matrixContent = Files.readString(outputDir.resolve("crud-matrix.md"));
 
     // デバッグ: 実際の内容を出力
-    logger.debug("=== MATRIX CONTENT DEBUG ===");
-    logger.debug(matrixContent);
-    logger.debug("=== END DEBUG ===");
+    System.err.println("=== MATRIX CONTENT DEBUG ===");
+    System.err.println(matrixContent);
+    System.err.println("=== END DEBUG ===");
 
     assertThat(matrixContent)
         .isNotEmpty()
@@ -227,7 +227,7 @@ class IntegrationTest extends TestBase {
         .containsIgnoringCase("customers"); // customersテーブルが検出されていることを要求
 
     String jsonContent = Files.readString(outputDir.resolve("analysis.json"));
-
+    
     assertThat(jsonContent)
         .isNotEmpty()
         .containsIgnoringCase("OrderMapper")
