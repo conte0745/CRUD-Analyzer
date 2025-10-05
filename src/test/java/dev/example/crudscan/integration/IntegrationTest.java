@@ -4,12 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 
 import dev.example.crudscan.AnalyzerMain;
 import dev.example.crudscan.TestBase;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -26,23 +22,6 @@ class IntegrationTest extends TestBase {
   private static final Logger logger = LoggerFactory.getLogger(IntegrationTest.class);
 
   @TempDir Path tempDir;
-
-  private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-  private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-  private final PrintStream originalOut = System.out;
-  private final PrintStream originalErr = System.err;
-
-  @BeforeEach
-  void setUpStreams() {
-    System.setOut(new PrintStream(outContent));
-    System.setErr(new PrintStream(errContent));
-  }
-
-  @AfterEach
-  void restoreStreams() {
-    System.setOut(originalOut);
-    System.setErr(originalErr);
-  }
 
   @Test
   @DisplayName("完全な分析ワークフローテスト - 全出力ファイルの生成確認")
@@ -87,9 +66,15 @@ class IntegrationTest extends TestBase {
     String jsonContent = Files.readString(outputDir.resolve("analysis.json"));
     assertThat(jsonContent).isNotEmpty();
 
-    // ログ出力の確認
-    String output = outContent.toString();
-    assertThat(output).containsAnyOf("完了", "Done", "SUCCESS");
+    // 分析が正常に完了したことを出力ファイルの存在と内容で確認
+    assertThat(matrixContent)
+        .as("CRUDマトリクスファイルが正常に生成されていること")
+        .isNotEmpty()
+        .contains("エンドポイント数");
+    assertThat(jsonContent)
+        .as("JSON分析結果ファイルが正常に生成されていること")
+        .isNotEmpty()
+        .contains("endpoints");
   }
 
   @Test
@@ -170,9 +155,13 @@ class IntegrationTest extends TestBase {
         .isNotEmpty()
         .containsIgnoringCase("com.example.direct.mapper.ProductMapper");
 
-    // ログ出力の確認
-    String output = outContent.toString();
-    assertThat(output).containsAnyOf("完了", "Done", "SUCCESS");
+    // 分析が正常に完了したことを出力ファイルの存在と内容で確認
+    assertThat(matrixContent)
+        .as("直接Mapper呼び出しが検出されていること")
+        .containsIgnoringCase("products");
+    assertThat(jsonContent)
+        .as("ProductMapperが分析結果に含まれていること")
+        .containsIgnoringCase("ProductMapper");
   }
 
   @Test
@@ -215,9 +204,9 @@ class IntegrationTest extends TestBase {
     String matrixContent = Files.readString(outputDir.resolve("crud-matrix.md"));
 
     // デバッグ: 実際の内容を出力
-    System.err.println("=== MATRIX CONTENT DEBUG ===");
-    System.err.println(matrixContent);
-    System.err.println("=== END DEBUG ===");
+    logger.debug("=== MATRIX CONTENT DEBUG ===");
+    logger.debug("Matrix content: {}", matrixContent);
+    logger.debug("=== END DEBUG ===");
 
     assertThat(matrixContent)
         .isNotEmpty()
@@ -233,9 +222,15 @@ class IntegrationTest extends TestBase {
         .containsIgnoringCase("OrderMapper")
         .containsIgnoringCase("CustomerMapper");
 
-    // ログ出力の確認
-    String output = outContent.toString();
-    assertThat(output).containsAnyOf("完了", "Done", "SUCCESS");
+    // 分析が正常に完了したことを出力ファイルの存在と内容で確認
+    assertThat(matrixContent)
+        .as("AbstractView経由の呼び出しが検出されていること")
+        .containsIgnoringCase("orders")
+        .containsIgnoringCase("customers");
+    assertThat(jsonContent)
+        .as("OrderMapperとCustomerMapperが分析結果に含まれていること")
+        .containsIgnoringCase("OrderMapper")
+        .containsIgnoringCase("CustomerMapper");
   }
 
   /** リアルなプロジェクト構造を作成 */

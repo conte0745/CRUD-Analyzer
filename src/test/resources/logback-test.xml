@@ -6,14 +6,15 @@
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
-  
+
   <!-- CRUD Analyzer専用ロガー設定（テスト用） -->
-  <logger name="dev.example.crudscan" level="DEBUG" additivity="false">
+  <!-- システムプロパティでログレベルを制御可能: -Dcrudscan.log.level=DEBUG -->
+  <logger name="dev.example.crudscan" level="${crudscan.log.level:-INFO}" additivity="false">
     <appender-ref ref="STDOUT" />
   </logger>
-  
+
   <!-- デフォルトログレベル -->
-  <root level="INFO">
+  <root level="${root.level:-WARN}">
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>
