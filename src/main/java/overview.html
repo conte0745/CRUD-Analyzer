@@ -13,17 +13,25 @@ Spring Boot + MyBatis プロジェクトの Controller → Service → Mapper �
 
 <h2>基本的な使用方法</h2>
 <pre>
-// 1. アナライザーの初期化
+// 1. 設定ファイルの作成
+cp analyzer-config.properties.example analyzer-config.properties
+
+// 2. 設定ファイルの編集（パスを実際のプロジェクトに合わせて変更）
+src.directory=/path/to/your/project/src/main/java
+resources.directory=/path/to/your/project/src/main/resources
+output.directory=/path/to/your/project/docs
+
+// 3. 実行（引数不要）
+java -jar crud-analyzer-all.jar
+</pre>
+
+<h2>プログラムからの使用</h2>
+<pre>
+// 設定ファイルから自動読み込み
 var analyzer = new CrudAnalyzer();
+var result = analyzer.analyze();
 
-// 2. 解析実行
-var result = analyzer.analyze(
-    Paths.get("src/main/java"),      // ソースディレクトリ
-    Paths.get("src/main/resources"), // リソースディレクトリ  
-    Paths.get("output")              // 出力ディレクトリ
-);
-
-// 3. 結果の取得
+// 結果の取得
 List&lt;Endpoint&gt; endpoints = result.endpoints();
 List&lt;SqlMapping&gt; sqlMappings = result.sqls();
 </pre>

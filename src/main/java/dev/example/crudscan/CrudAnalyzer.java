@@ -53,11 +53,9 @@ import org.slf4j.LoggerFactory;
  * <h2>使用例</h2>
  *
  * <pre>{@code
+ * // 設定ファイルから自動読み込み
  * CrudAnalyzer analyzer = new CrudAnalyzer();
- * analyzer.analyze(
- *     Paths.get("src/main/java"),
- *     Paths.get("src/main/resources"),
- *     Paths.get("output"));
+ * analyzer.analyze();  // 引数不要
  * }</pre>
  *
  * @author CRUD Analyzer Team

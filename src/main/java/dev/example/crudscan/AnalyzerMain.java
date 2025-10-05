@@ -22,8 +22,19 @@ import org.slf4j.LoggerFactory;
  *
  * <h2>使用方法</h2>
  *
+ * <p>設定ファイル {@code analyzer-config.properties} を作成してから実行します：
+ *
  * <pre>{@code
- * java -jar crud-analyzer.jar
+ * // 1. 設定ファイルの作成
+ * cp analyzer-config.properties.example analyzer-config.properties
+ *
+ * // 2. 設定ファイルの編集（パスを実際のプロジェクトに合わせて変更）
+ * src.directory=/path/to/your/project/src/main/java
+ * resources.directory=/path/to/your/project/src/main/resources
+ * output.directory=/path/to/your/project/docs
+ *
+ * // 3. 実行（引数不要）
+ * java -jar crud-analyzer-all.jar
  * }</pre>
  *
  * <h2>出力ファイル</h2>
