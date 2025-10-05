@@ -250,9 +250,13 @@ public class MyBatisXmlScanner {
 
     try {
       var info = classifier.classify(rawSql);
-      list.add(new SqlMapping(namespace, id, info.op, rawSql, info.tables));
+      list.add(new SqlMapping(namespace, id, info.op, rawSql, info.getAllTables()));
       logger.debug(
-          "MyBatisXmlScanner: SQLマッピング追加 - {}#{} -> {} {}", namespace, id, info.op, info.tables);
+          "MyBatisXmlScanner: SQLマッピング追加 - {}#{} -> {} {}",
+          namespace,
+          id,
+          info.op,
+          info.getAllTables());
     } catch (RuntimeException sqlEx) {
       logger.warn("MyBatisXmlScanner: SQL解析エラー - {}#{}: {}", namespace, id, sqlEx.getMessage());
     }

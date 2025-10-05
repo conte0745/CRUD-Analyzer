@@ -221,8 +221,9 @@ public class MyBatisAnnotationScanner {
 
       try {
         var info = classifier.classify(sql);
-        mappings.add(new SqlMapping(className, methodName, operation, sql, info.tables));
-        logger.debug("SQLマッピング追加: {}#{} -> {} {}", className, methodName, operation, info.tables);
+        mappings.add(new SqlMapping(className, methodName, operation, sql, info.getAllTables()));
+        logger.debug(
+            "SQLマッピング追加: {}#{} -> {} {}", className, methodName, operation, info.getAllTables());
       } catch (RuntimeException ex) {
         logger.warn(
             "SQL解析エラー: {}#{} - SQL: '{}' - {}",

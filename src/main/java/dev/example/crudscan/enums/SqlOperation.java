@@ -20,7 +20,10 @@ public enum SqlOperation {
   UPDATE("UPDATE"),
 
   /** DELETE操作 - データの削除 */
-  DELETE("DELETE");
+  DELETE("DELETE"),
+
+  /** 未定義操作 */
+  UNKOWN("UNKNOWN");
 
   /** SQL操作名 */
   private final String operationName;

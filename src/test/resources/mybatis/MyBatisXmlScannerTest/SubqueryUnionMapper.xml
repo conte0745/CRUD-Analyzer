@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.SubqueryUnionMapper">
+    
+    <select id="findActiveUsersComplex" resultType="ActiveUser">
+        -- Users with recent orders
+        SELECT DISTINCT 
+            u.id,
+            u.name,
+            u.email,
+            'recent_buyer' as user_type
+        FROM users u
+        WHERE u.id IN (
+            SELECT DISTINCT o.user_id
+            FROM orders o
+            JOIN products p ON o.product_id = p.id
+            WHERE o.created_at &gt;= DATE_SUB(NOW(), INTERVAL 30 DAY)
+              AND p.active = 1
+        )
+        
+        UNION
+        
+        -- Users with complete profiles
+        SELECT DISTINCT 
+            u.id,
+            u.name,
+            u.email,
+            'complete_profile' as user_type
+        FROM users u
+        JOIN user_profiles up ON u.id = up.user_id
+        WHERE up.profile_complete = 1
+          AND u.active = 1
+          AND EXISTS (
+              SELECT 1 FROM orders o2 
+              WHERE o2.user_id = u.id 
+                AND o2.status = 'completed'
+          )
+        
+        ORDER BY name
+    </select>
+    
+</mapper>

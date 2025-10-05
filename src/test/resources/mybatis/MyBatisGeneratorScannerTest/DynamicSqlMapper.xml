@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.DynamicSqlMapper">
+    
+    <select id="findUsersDynamic" resultType="User">
+        SELECT * FROM users
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="email != null and email != ''">
+                AND email = #{email}
+            </if>
+            <if test="active != null">
+                AND active = #{active}
+            </if>
+        </where>
+        <if test="orderBy != null">
+            ORDER BY ${orderBy}
+        </if>
+    </select>
+    
+    <update id="updateSelective">
+        UPDATE users
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="active != null">active = #{active},</if>
+            updated_at = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <select id="findUsersWithRelations" resultType="UserDetail">
+        SELECT 
+            u.id,
+            u.name,
+            u.email
+        FROM users u
+        <where>
+            u.active = 1
+            <if test="departmentId != null">
+                AND u.department_id = #{departmentId}
+            </if>
+        </where>
+        ORDER BY u.name
+    </select>
+    
+</mapper>

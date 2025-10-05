@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.CTEMapper">
+    
+    <select id="findUserHierarchy" resultType="UserHierarchy">
+        WITH RECURSIVE user_hierarchy AS (
+            -- Base case: top-level users
+            SELECT 
+                u.id,
+                u.name,
+                u.manager_id,
+                ur.role_name,
+                d.department_name,
+                0 as level
+            FROM users u
+            JOIN user_roles ur ON u.role_id = ur.id
+            JOIN departments d ON u.department_id = d.id
+            WHERE u.manager_id IS NULL
+            
+            UNION ALL
+            
+            -- Recursive case: subordinates
+            SELECT 
+                u.id,
+                u.name,
+                u.manager_id,
+                ur.role_name,
+                d.department_name,
+                uh.level + 1
+            FROM users u
+            JOIN user_roles ur ON u.role_id = ur.id
+            JOIN departments d ON u.department_id = d.id
+            JOIN user_hierarchy uh ON u.manager_id = uh.id
+            WHERE uh.level &lt; 5
+        )
+        SELECT * FROM user_hierarchy
+        ORDER BY level, department_name, name
+    </select>
+    
+</mapper>

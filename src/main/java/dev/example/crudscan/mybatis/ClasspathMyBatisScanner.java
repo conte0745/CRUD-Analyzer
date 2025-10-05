@@ -118,10 +118,7 @@ public class ClasspathMyBatisScanner {
     }
 
     try (var stream = Files.walk(directory)) {
-      for (Path jarPath :
-          stream
-              .filter(f -> f.toString().startsWith("common") && f.toString().endsWith(".jar"))
-              .toList()) {
+      for (Path jarPath : stream.filter(f -> f.toString().endsWith(".jar")).toList()) {
         scanJarFile(jarPath, list);
       }
     } catch (IOException ex) {
@@ -193,7 +190,7 @@ public class ClasspathMyBatisScanner {
 
           try {
             var info = classifier.classify(rawSql);
-            list.add(new SqlMapping(namespace, id, info.op, rawSql, info.tables));
+            list.add(new SqlMapping(namespace, id, info.op, rawSql, info.getAllTables()));
             logger.debug("SQLマッピング追加: {}#{} ({})", namespace, id, source);
           } catch (Exception ex) {
             logger.debug("SQL解析失敗: {}#{} in {}", namespace, id, source);

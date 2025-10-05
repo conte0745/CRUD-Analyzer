@@ -1,0 +1,32 @@
+package com.example.mapper;
+
+import org.apache.ibatis.annotations.*;
+
+@Mapper
+public interface CompleteAnnotationMapper {
+
+    @Select("SELECT * FROM users WHERE id = #{id}")
+    User findById(Long id);
+
+    @Select("SELECT * FROM users ORDER BY name")
+    List<User> findAll();
+
+    @Insert("INSERT INTO users (name, email, created_at) VALUES (#{name}, #{email}, NOW())")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    void insertUser(User user);
+
+    @Update("UPDATE users SET name = #{name}, email = #{email} WHERE id = #{id}")
+    void updateUser(User user);
+
+    @Delete("DELETE FROM users WHERE id = #{id}")
+    void deleteUser(Long id);
+
+    // 複雑なクエリ
+    @Select({
+        "SELECT u.*, p.title",
+        "FROM users u",
+        "LEFT JOIN posts p ON u.id = p.author_id",
+        "WHERE u.active = 1"
+    })
+    List<UserWithPosts> findActiveUsersWithPosts();
+}

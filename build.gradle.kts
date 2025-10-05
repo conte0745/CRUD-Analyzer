@@ -1,6 +1,7 @@
 plugins {
     java
     application
+    jacoco
     id("com.gradleup.shadow") version "8.3.5"
     id("com.diffplug.spotless") version "6.25.0"
 }
@@ -16,6 +17,13 @@ dependencies {
   implementation("com.github.jsqlparser:jsqlparser:5.3")
   implementation("org.slf4j:slf4j-api:2.0.13")
   runtimeOnly("ch.qos.logback:logback-classic:1.5.7")
+  
+  // テスト依存関係
+  testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+  testImplementation("org.mockito:mockito-core:5.6.0")
+  testImplementation("org.mockito:mockito-junit-jupiter:5.6.0")
+  testImplementation("org.assertj:assertj-core:3.24.2")
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.test {
@@ -24,6 +32,33 @@ tasks.test {
     maxParallelForks = 1
     // JVMごとのテスト実行も単一に制限
     systemProperty("junit.jupiter.execution.parallel.enabled", "false")
+    
+    // JaCoCoカバレッジ測定を有効化
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+// JaCoCoカバレッジレポート設定
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
+    
+    executionData.setFrom(fileTree(layout.buildDirectory.dir("jacoco")).include("**/*.exec"))
+}
+
+// カバレッジ検証設定
+tasks.jacocoTestCoverageVerification {
+    dependsOn(tasks.jacocoTestReport)
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.85".toBigDecimal() // 85%以上のカバレッジを要求
+            }
+        }
+    }
 }
 
 application { mainClass.set("dev.example.crudscan.AnalyzerMain") }
@@ -65,4 +100,32 @@ tasks.javadoc {
             charset("UTF-8")
         }
     }
+}
+
+// 品質チェックタスクの定義
+tasks.register("qualityCheck") {
+    description = "全ての品質チェックを実行"
+    group = "verification"
+    
+    dependsOn(
+        tasks.test,
+        tasks.jacocoTestReport,
+        tasks.jacocoTestCoverageVerification,
+        tasks.spotlessApply,
+        tasks.javadoc
+    )
+}
+
+// CIで使用するタスク
+tasks.register("ci") {
+    description = "CI環境で実行する全てのチェック"
+    group = "build"
+    
+    dependsOn(
+        tasks.clean,
+        tasks.compileJava,
+        tasks.compileTestJava,
+        tasks.named("qualityCheck"),
+        tasks.shadowJar
+    )
 }

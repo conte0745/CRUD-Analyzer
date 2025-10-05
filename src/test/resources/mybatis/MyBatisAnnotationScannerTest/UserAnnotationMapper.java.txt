@@ -1,0 +1,13 @@
+package com.example.mapper;
+
+import org.apache.ibatis.annotations.*;
+
+@Mapper
+public interface UserAnnotationMapper {
+
+    @Select("SELECT * FROM users WHERE id = #{id}")
+    User findById(Long id);
+
+    @Insert("INSERT INTO users (name, email) VALUES (#{name}, #{email})")
+    void insertUser(User user);
+}

@@ -117,14 +117,16 @@ public class CallGraphScanner {
    * @param callEdges 抽出されたコールエッジを追加するリスト
    */
   private void processJavaFile(Path javaFile, List<CallEdge> callEdges) {
-    handleWithErrorLogging(
-        () -> {
-          var cu = StaticJavaParser.parse(javaFile);
-          var classes = cu.findAll(ClassOrInterfaceDeclaration.class);
+    try {
+      var cu = StaticJavaParser.parse(javaFile);
+      var classes = cu.findAll(ClassOrInterfaceDeclaration.class);
 
-          classes.stream().filter(this::isTargetClass).forEach(cls -> processClass(cls, callEdges));
-        },
-        "ファイル処理エラー: " + javaFile);
+      classes.stream().filter(this::isTargetClass).forEach(cls -> processClass(cls, callEdges));
+    } catch (IOException e) {
+      logError("ファイル処理エラー: " + javaFile, e);
+    } catch (RuntimeException e) {
+      logError("ファイル解析エラー: " + javaFile, e);
+    }
   }
 
   /**
@@ -267,8 +269,7 @@ public class CallGraphScanner {
    * @param e 例外
    */
   private void logError(String message, Exception e) {
-    logger.debug("{}: {}", message, e.getMessage());
-    e.printStackTrace();
+    logger.error("{}: {}", message, e.getMessage(), e);
   }
 
   /** IOException を投げる可能性のある操作を表すインターフェース */

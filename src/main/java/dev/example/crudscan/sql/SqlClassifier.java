@@ -64,11 +64,31 @@ public class SqlClassifier {
     public String op;
 
     /**
-     * 抽出されたテーブル名のリスト。
+     * 操作対象テーブル名のリスト（DELETE/UPDATE/INSERTの直接対象）。
      *
-     * <p>SQL文中で参照されているテーブル名が格納されます。 重複は除去され、発見順に格納されます。
+     * <p>DELETE文の場合、実際に削除されるテーブルのみが含まれます。 UPDATE文の場合、実際に更新されるテーブルのみが含まれます。
+     * JOINしたテーブルは参照のみなので含まれません。
      */
-    public List<String> tables = new ArrayList<>();
+    public List<String> targetTables = new ArrayList<>();
+
+    /**
+     * 参照テーブル名のリスト（JOIN/WHERE条件で参照されるテーブル）。
+     *
+     * <p>DELETE/UPDATE文でJOINしたテーブルや、WHERE句のサブクエリで参照されるテーブルが含まれます。
+     */
+    public List<String> referenceTables = new ArrayList<>();
+
+    /**
+     * 全テーブル名のリストを取得します（後方互換性のため）。
+     *
+     * @return 操作対象テーブルと参照テーブルを統合したリスト（重複除去済み）
+     */
+    public List<String> getAllTables() {
+      Set<String> uniqueTables = new LinkedHashSet<>();
+      uniqueTables.addAll(targetTables);
+      uniqueTables.addAll(referenceTables);
+      return new ArrayList<>(uniqueTables);
+    }
   }
 
   /**
@@ -108,7 +128,13 @@ public class SqlClassifier {
           logger.warn("未知のSQL文タイプです: {}", stmt.getClass().getSimpleName());
         }
       }
-      logger.info("SQL解析完了 - 操作: {}, テーブル数: {}", info.op, info.tables.size());
+      logger.info(
+          "SQL文の解析完了: "
+              + info.op
+              + " - 対象テーブル数: "
+              + info.targetTables.size()
+              + ", 参照テーブル数: "
+              + info.referenceTables.size());
 
     } catch (Exception e) {
       handleParseFallback(raw, info);
@@ -173,7 +199,7 @@ public class SqlClassifier {
     String upperSql = sql.toUpperCase().trim();
 
     // 基本的なSQL文の構造をチェック
-    return upperSql.matches("^(SELECT|INSERT|UPDATE|DELETE)\\s+.*")
+    return upperSql.matches("^(SELECT|INSERT|UPDATE|DELETE|WITH)\\s+.*")
         && !upperSql.matches(".*\\s+(WHERE|FROM|SET)\\s*$")
         && !upperSql.contains("WHERE WHERE")
         && !upperSql.contains("FROM FROM");
@@ -244,10 +270,10 @@ public class SqlClassifier {
           new net.sf.jsqlparser.util.TablesNamesFinder<>();
       Set<String> tableNames =
           tablesNamesFinder.getTables((net.sf.jsqlparser.statement.Statement) select);
-      info.tables.addAll(tableNames);
-      logger.info("TablesNamesFinderでテーブル抽出完了: " + String.join(", ", tableNames));
+      info.referenceTables.addAll(tableNames);
+      logger.info("TablesNamesFinderでテーブル抽出完了: {}", String.join(", ", tableNames));
     } catch (Exception e) {
-      logger.warn("TablesNamesFinderが失敗。手動解析にフォールバック: " + e.getMessage());
+      logger.warn("TablesNamesFinderが失敗。手動解析にフォールバック: {}", e.getMessage());
       // フォールバック: 手動でSelectBodyを解析
       extractTablesFromSelectBody(select, info);
     }
@@ -268,14 +294,14 @@ public class SqlClassifier {
    * @param info 結果を格納するInfoオブジェクト
    */
   private void extractTablesFromSelectBody(Select select, Info info) {
-    logger.info("手動でSelectからテーブル名を抽出開始: " + select.getClass().getSimpleName());
+    logger.info("手動でSelectからテーブル名を抽出開始: {}", select.getClass().getSimpleName());
     try {
       // JSqlParser 5.3: SelectBodyが削除されたため、Selectを直接型チェック
       if (select instanceof net.sf.jsqlparser.statement.select.PlainSelect ps) {
         logger.info("PlainSelectとして処理");
         extractTablesFromPlainSelect(ps, info);
       } else if (select instanceof net.sf.jsqlparser.statement.select.SetOperationList setOp) {
-        logger.info("SetOperationListとして処理 - サブクエリ数: " + setOp.getSelects().size());
+        logger.info("SetOperationListとして処理 - サブクエリ数: {}", setOp.getSelects().size());
         for (var subSelect : setOp.getSelects()) {
           extractTablesFromSelectBody(subSelect, info);
         }
@@ -286,7 +312,7 @@ public class SqlClassifier {
         extractTablesFromSelectBody(parenthesedSelect.getSelect(), info);
       }
     } catch (Exception e) {
-      logger.warn("手動解析が失敗。正規表現フォールバックを実行: " + e.getMessage());
+      logger.warn("手動解析が失敗。正規表現フォールバックを実行: {}", e.getMessage());
       // 最終フォールバック: 正規表現
       extractTablesWithRegex(select.toString(), info);
     }
@@ -303,12 +329,12 @@ public class SqlClassifier {
   private void extractTablesFromPlainSelect(
       net.sf.jsqlparser.statement.select.PlainSelect ps, Info info) {
     if (ps.getFromItem() instanceof net.sf.jsqlparser.schema.Table table) {
-      info.tables.add(table.getName());
+      info.referenceTables.add(table.getName());
     }
     if (ps.getJoins() != null) {
       for (var join : ps.getJoins()) {
         if (join.getRightItem() instanceof net.sf.jsqlparser.schema.Table joinTable) {
-          info.tables.add(joinTable.getName());
+          info.referenceTables.add(joinTable.getName());
         }
       }
     }
@@ -331,7 +357,7 @@ public class SqlClassifier {
    */
   private void extractTablesWithRegex(String sql, Info info) {
     logger.info("正規表現によるテーブル名抽出を開始");
-    int initialTableCount = info.tables.size();
+    int initialTableCount = info.referenceTables.size();
     String[] patterns = {"FROM\\s+([`\"']?\\w+[`\"']?)", "JOIN\\s+([`\"']?\\w+[`\"']?)"};
     for (String pat : patterns) {
       java.util.regex.Matcher m =
@@ -340,14 +366,14 @@ public class SqlClassifier {
               .matcher(sql);
       while (m.find()) {
         String table = m.group(1).replaceAll("[`\"']", "");
-        if (!info.tables.contains(table)) {
-          info.tables.add(table);
+        if (!info.referenceTables.contains(table)) {
+          info.referenceTables.add(table);
           logger.info("正規表現でテーブル発見: " + table);
         }
       }
     }
-    int extractedCount = info.tables.size() - initialTableCount;
-    logger.info("正規表現抽出完了 - 新規テーブル数: " + extractedCount);
+    int extractedCount = info.referenceTables.size() - initialTableCount;
+    logger.info("正規表現抽出完了 - 新規テーブル数: {}", extractedCount);
   }
 
   /**
@@ -361,8 +387,8 @@ public class SqlClassifier {
   private void handleInsert(Insert ins, Info info) {
     info.op = SqlOperation.INSERT.toString();
     String tableName = ins.getTable().getName();
-    info.tables.add(tableName);
-    logger.info("INSERT文解析完了 - 対象テーブル: " + tableName);
+    info.targetTables.add(tableName);
+    logger.info("INSERT文解析完了 - 対象テーブル: {}", tableName);
   }
 
   /**
@@ -377,8 +403,26 @@ public class SqlClassifier {
     info.op = SqlOperation.UPDATE.toString();
     if (up.getTable() != null) {
       String tableName = up.getTable().getName();
-      info.tables.add(tableName);
-      logger.info("UPDATE文解析完了 - 対象テーブル: " + tableName);
+      info.targetTables.add(tableName);
+
+      // JOINしたテーブルも抽出（参照テーブルとして）
+      if (up.getJoins() != null) {
+        up.getJoins()
+            .forEach(
+                join -> {
+                  if (join.getRightItem() != null) {
+                    String joinTableName = join.getRightItem().toString();
+                    // エイリアスを除去してテーブル名のみを抽出
+                    if (joinTableName.contains(" ")) {
+                      joinTableName = joinTableName.split("\\s+")[0];
+                    }
+                    info.referenceTables.add(joinTableName);
+                  }
+                });
+      }
+
+      logger.info(
+          "UPDATE文解析完了 - 更新対象テーブル: {}, 参照テーブル数: {}", tableName, info.referenceTables.size());
     } else {
       logger.warn("UPDATE文でテーブル名が取得できませんでした");
     }
@@ -387,16 +431,35 @@ public class SqlClassifier {
   /**
    * DELETE文からテーブル名を抽出します。
    *
-   * <p>DELETE文の対象テーブルを特定し、操作種別を"DELETE"に設定します。
+   * <p>DELETE文の対象テーブル（実際に削除される）と参照テーブル（JOINで参照される）を区別して抽出し、操作種別を"DELETE"に設定します。
    *
    * @param del 解析対象のDeleteオブジェクト
    * @param info 結果を格納するInfoオブジェクト
    */
   private void handleDelete(Delete del, Info info) {
     info.op = SqlOperation.DELETE.toString();
+
+    // メインテーブル（削除対象）を追加
     String tableName = del.getTable().getName();
-    info.tables.add(tableName);
-    logger.info("DELETE文解析完了 - 対象テーブル: " + tableName);
+    info.targetTables.add(tableName);
+
+    // JOINしたテーブル（参照のみ）を抽出
+    if (del.getJoins() != null) {
+      del.getJoins()
+          .forEach(
+              join -> {
+                if (join.getRightItem() != null) {
+                  String joinTableName = join.getRightItem().toString();
+                  // エイリアスを除去してテーブル名のみを抽出
+                  if (joinTableName.contains(" ")) {
+                    joinTableName = joinTableName.split("\\s+")[0];
+                  }
+                  info.referenceTables.add(joinTableName);
+                }
+              });
+    }
+
+    logger.info("DELETE文解析完了 - 削除対象テーブル: {}, 参照テーブル数: {}", tableName, info.referenceTables.size());
   }
 
   /**
@@ -444,8 +507,8 @@ public class SqlClassifier {
         String table = m.group(1);
         // バッククォート等を除去
         table = table.replaceAll("[`\"']", "");
-        if (!info.tables.contains(table)) {
-          info.tables.add(table);
+        if (!info.referenceTables.contains(table)) {
+          info.referenceTables.add(table);
           // ログ出力を抑制
         }
       }

@@ -1,0 +1,12 @@
+package com.example.mapper;
+
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface EmptyMapper {
+
+    // アノテーションなしのメソッド
+    User findById(Long id);
+
+    void insertUser(User user);
+}
