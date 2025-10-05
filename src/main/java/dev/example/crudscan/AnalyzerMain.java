@@ -23,24 +23,16 @@ import org.slf4j.LoggerFactory;
  * <h2>使用方法</h2>
  *
  * <pre>{@code
- * java -jar crud-analyzer.jar <src> <resources> <output>
+ * java -jar crud-analyzer.jar
  * }</pre>
- *
- * <h2>引数</h2>
- *
- * <ul>
- *   <li>{@code src} - Javaソースディレクトリのパス
- *   <li>{@code resources} - リソースディレクトリのパス（MyBatis XMLファイル等）
- *   <li>{@code output} - 解析結果の出力ディレクトリのパス
- * </ul>
  *
  * <h2>出力ファイル</h2>
  *
  * <ul>
  *   <li>{@code crud-matrix.md} - 全体のCRUDマトリクス
  *   <li>{@code crud/[package]-crud-matrix.md} - パッケージ別CRUDマトリクス
- *   <li>{@code crud.puml} - PlantUML図
- *   <li>{@code analysis.json} - 解析結果のJSON形式
+ *   <li>{@code crud/crud.puml} - PlantUML図
+ *   <li>{@code crud/analysis.json} - 解析結果のJSON形式
  * </ul>
  *
  * @author CRUD Analyzer Team

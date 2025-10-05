@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD Analyzer API Overview</title>
+</head>
+<body>
+
+<p>
+Spring Boot + MyBatis プロジェクトの Controller → Service → Mapper の呼び出し関係を解析し、
+エンドポイントとテーブルのCRUD操作を可視化するツールです。
+</p>
+
+<h2>基本的な使用方法</h2>
+<pre>
+// 1. アナライザーの初期化
+var analyzer = new CrudAnalyzer();
+
+// 2. 解析実行
+var result = analyzer.analyze(
+    Paths.get("src/main/java"),      // ソースディレクトリ
+    Paths.get("src/main/resources"), // リソースディレクトリ  
+    Paths.get("output")              // 出力ディレクトリ
+);
+
+// 3. 結果の取得
+List&lt;Endpoint&gt; endpoints = result.endpoints();
+List&lt;SqlMapping&gt; sqlMappings = result.sqls();
+</pre>
+
+<h2>主要パッケージ</h2>
+<dl>
+    <dt><strong>{@link dev.example.crudscan.ast}</strong></dt>
+    <dd>AST解析 - {@link dev.example.crudscan.ast.ControllerScanner}, {@link dev.example.crudscan.ast.CallGraphScanner}</dd>
+    
+    <dt><strong>{@link dev.example.crudscan.mybatis}</strong></dt>
+    <dd>MyBatis解析 - {@link dev.example.crudscan.mybatis.MyBatisXmlScanner}, {@link dev.example.crudscan.mybatis.MyBatisAnnotationScanner}</dd>
+    
+    <dt><strong>{@link dev.example.crudscan.output}</strong></dt>
+    <dd>結果出力 - {@link dev.example.crudscan.output.MarkdownWriter}, {@link dev.example.crudscan.output.PlantumlWriter}</dd>
+    
+    <dt><strong>{@link dev.example.crudscan.model}</strong></dt>
+    <dd>データモデル - {@link dev.example.crudscan.model.Models.Endpoint}, {@link dev.example.crudscan.model.Models.SqlMapping}</dd>
+</dl>
+
+<h2>主要クラス</h2>
+<ul>
+    <li><strong>{@link dev.example.crudscan.CrudAnalyzer}</strong> - メインの解析エンジン</li>
+    <li><strong>{@link dev.example.crudscan.AnalyzerMain}</strong> - コマンドライン実行のエントリーポイント</li>
+    <li><strong>{@link dev.example.crudscan.config.AnalyzerConfiguration}</strong> - 設定管理</li>
+    <li><strong>{@link dev.example.crudscan.sql.SqlClassifier}</strong> - SQL文の分類とテーブル抽出</li>
+</ul>
+
+<h2>設定ファイル</h2>
+<p>
+<code>analyzer-config.properties</code> で動作をカスタマイズできます：
+</p>
+<pre>
+src.directory=/path/to/src/main/java
+resources.directory=/path/to/src/main/resources
+output.directory=/path/to/output
+analysis.include.generated=true
+analysis.include.dynamic.sql=true
+</pre>
+
+<p>
+詳細な使用方法とサンプルについては、プロジェクトのREADME.mdを参照してください。
+</p>
+
+</body>
+</html>

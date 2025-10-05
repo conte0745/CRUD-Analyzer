@@ -14,33 +14,32 @@ import org.xml.sax.SAXException;
 /**
  * MyBatis XMLマッピングファイルを解析してSQLマッピング情報を抽出するスキャナー
  *
- * <p>
- * このクラスは、プロジェクト内のMyBatis XMLファイルを解析し、 SQL文とテーブル情報を抽出してCRUD解析に必要な情報を収集します。
+ * <p>このクラスは、プロジェクト内のMyBatis XMLファイルを解析し、 SQL文とテーブル情報を抽出してCRUD解析に必要な情報を収集します。
  *
  * <h2>解析対象</h2>
  *
  * <ul>
- * <li>MyBatis XMLマッピングファイル（*.xml）
- * <li>select、insert、update、delete要素
- * <li>SQL文内のテーブル名
+ *   <li>MyBatis XMLマッピングファイル（*.xml）
+ *   <li>select、insert、update、delete要素
+ *   <li>SQL文内のテーブル名
  * </ul>
  *
  * <h2>抽出される情報</h2>
  *
  * <ul>
- * <li>マッパークラス名（namespace属性）
- * <li>メソッド名（id属性）
- * <li>操作種別（SELECT、INSERT、UPDATE、DELETE）
- * <li>生SQL文
- * <li>対象テーブル名のリスト
+ *   <li>マッパークラス名（namespace属性）
+ *   <li>メソッド名（id属性）
+ *   <li>操作種別（SELECT、INSERT、UPDATE、DELETE）
+ *   <li>生SQL文
+ *   <li>対象テーブル名のリスト
  * </ul>
  *
  * <h2>セキュリティ対策</h2>
  *
  * <ul>
- * <li>XXE（XML External Entity）攻撃対策
- * <li>外部エンティティの無効化
- * <li>安全なXML解析設定
+ *   <li>XXE（XML External Entity）攻撃対策
+ *   <li>外部エンティティの無効化
+ *   <li>安全なXML解析設定
  * </ul>
  *
  * <h2>使用例</h2>
@@ -80,19 +79,17 @@ public class MyBatisXmlScanner {
   /**
    * MyBatis XMLファイルのスキャンを実行
    *
-   * <p>
-   * 指定されたリソースディレクトリ内のすべてのXMLファイルを解析し、 MyBatis XMLマッピングファイルからSQLマッピング情報を抽出します。
+   * <p>指定されたリソースディレクトリ内のすべてのXMLファイルを解析し、 MyBatis XMLマッピングファイルからSQLマッピング情報を抽出します。
    *
-   * <p>
-   * 解析では以下の処理を行います：
+   * <p>解析では以下の処理を行います：
    *
    * <ol>
-   * <li>XMLファイルの検索と読み込み
-   * <li>MyBatis XMLファイルかどうかの判定
-   * <li>namespace属性からマッパークラス名を取得
-   * <li>select、insert、update、delete要素の解析
-   * <li>SQL文からテーブル名を抽出
-   * <li>SqlMappingオブジェクトの生成
+   *   <li>XMLファイルの検索と読み込み
+   *   <li>MyBatis XMLファイルかどうかの判定
+   *   <li>namespace属性からマッパークラス名を取得
+   *   <li>select、insert、update、delete要素の解析
+   *   <li>SQL文からテーブル名を抽出
+   *   <li>SqlMappingオブジェクトの生成
    * </ol>
    *
    * @return 抽出されたSQLマッピング情報のリスト
@@ -135,7 +132,7 @@ public class MyBatisXmlScanner {
    * XMLファイルのリストを処理
    *
    * @param xmlFiles 処理対象のXMLファイルリスト
-   * @param list     SQLマッピングを追加するリスト
+   * @param list SQLマッピングを追加するリスト
    */
   private void processXmlFiles(List<Path> xmlFiles, List<SqlMapping> list) {
     for (Path xmlFile : xmlFiles) {
@@ -147,7 +144,7 @@ public class MyBatisXmlScanner {
    * 単一のXMLファイルを処理
    *
    * @param xmlFile 処理対象のXMLファイル
-   * @param list    SQLマッピングを追加するリスト
+   * @param list SQLマッピングを追加するリスト
    */
   private void processXmlFile(Path xmlFile, List<SqlMapping> list) {
     logger.debug("MyBatisXmlScanner: 処理中 - {}", xmlFile);
@@ -176,8 +173,8 @@ public class MyBatisXmlScanner {
    *
    * @param xmlFile 解析対象のXMLファイル
    * @return 解析されたDocumentオブジェクト
-   * @throws SAXException                 XML解析エラーが発生した場合
-   * @throws IOException                  ファイル読み込みエラーが発生した場合
+   * @throws SAXException XML解析エラーが発生した場合
+   * @throws IOException ファイル読み込みエラーが発生した場合
    * @throws ParserConfigurationException パーサー設定エラーが発生した場合
    */
   private Document parseXmlDocument(Path xmlFile)
@@ -190,12 +187,13 @@ public class MyBatisXmlScanner {
   /**
    * XMLドキュメントからnamespace属性を抽出
    *
-   * @param doc     解析済みのDocumentオブジェクト
+   * @param doc 解析済みのDocumentオブジェクト
    * @param xmlFile ログ出力用のファイルパス
    * @return namespace文字列、空の場合はnull
    */
   private String extractNamespace(Document doc, Path xmlFile) {
-    String namespace = Optional.ofNullable(doc.getDocumentElement().getAttribute("namespace")).orElse("");
+    String namespace =
+        Optional.ofNullable(doc.getDocumentElement().getAttribute("namespace")).orElse("");
     if (namespace.isEmpty()) {
       logger.debug("MyBatisXmlScanner: namespaceが空のためスキップ - {}", xmlFile);
       return null;
@@ -208,9 +206,9 @@ public class MyBatisXmlScanner {
   /**
    * SQL要素（select、insert、update、delete）を処理
    *
-   * @param doc       解析済みのDocumentオブジェクト
+   * @param doc 解析済みのDocumentオブジェクト
    * @param namespace マッパーのnamespace
-   * @param list      SQLマッピングを追加するリスト
+   * @param list SQLマッピングを追加するリスト
    * @return 処理されたSQL要素数
    */
   private int processSqlElements(Document doc, String namespace, List<SqlMapping> list) {
@@ -242,9 +240,9 @@ public class MyBatisXmlScanner {
   /**
    * 単一のSQL要素を処理してSqlMappingを作成
    *
-   * @param element   処理対象のSQL要素
+   * @param element 処理対象のSQL要素
    * @param namespace マッパーのnamespace
-   * @param list      SQLマッピングを追加するリスト
+   * @param list SQLマッピングを追加するリスト
    */
   private void processSqlElement(Element element, String namespace, List<SqlMapping> list) {
     String id = element.getAttribute("id");

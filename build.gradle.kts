@@ -45,3 +45,24 @@ tasks.shadowJar {
   archiveBaseName.set("crud-analyzer")
   archiveClassifier.set("all")  
 }
+
+// JavaDoc設定
+tasks.javadoc {
+    options {
+        encoding = "UTF-8"
+        (this as StandardJavadocDocletOptions).apply {
+            // 概要ページの生成を有効化
+            overview = "src/main/java/overview.html"
+            windowTitle = "CRUD Analyzer API Documentation"
+            docTitle = "CRUD Analyzer"
+            header = "<b>CRUD Analyzer</b>"
+            bottom = "Copyright © 2024 CRUD Analyzer Team. All rights reserved."
+            
+            // 詳細なドキュメント生成オプション
+            addBooleanOption("html5", true)
+            addStringOption("Xdoclint:none", "-quiet")
+            links("https://docs.oracle.com/en/java/javase/21/docs/api/")
+            charset("UTF-8")
+        }
+    }
+}
