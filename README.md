@@ -43,7 +43,7 @@ cd CRUD-Analyzer
 
 ## 📖 使い方
 
-### 🎯 推奨: 設定ファイルを使用した実行
+### 🎯 設定ファイルを使用した実行
 
 #### 1. 設定ファイルの作成
 ```bash
@@ -81,33 +81,20 @@ include.packages=
 exclude.packages=test,example
 ```
 
-#### 3. 実行（引数不要）
+#### 3. 実行方法
 ```bash
 java -jar build/libs/crud-analyzer-all.jar
 ```
-
-### 🔧 従来の実行方法（引数指定）
-```bash
-java -jar build/libs/crud-analyzer-all.jar <Javaソースディレクトリ> <リソースディレクトリ> <出力ディレクトリ>
-```
-
-### 実行例
-```bash
-# 設定ファイル使用
-java -jar build/libs/crud-analyzer-all.jar
-```
-
-### パラメータ説明
-1. **Javaソースディレクトリ**: Controller, Service, Mapperクラスが格納されているディレクトリ
-2. **リソースディレクトリ**: MyBatis XMLファイルが格納されているディレクトリ
-3. **出力ディレクトリ**: 解析結果を出力するディレクトリ
 
 ## 📊 出力ファイル
 
 解析完了後、以下のファイルが出力されます：
 
 ### 1. `出力ディレクトリ/crud-matrix.md`
-エンドポイント × テーブル のCRUDマトリクス（Markdown形式）
+
+- エンドポイント × テーブル のCRUDマトリクス（Markdown形式）
+- パッケージ毎にCRUDマトリクス（ディレクトリ下の`crud/[package]-crud-matrix.md`）を出力
+
 ```markdown
 | Endpoint | users | books | book_genres |
 |----------|-------|-------|-------------|
@@ -117,7 +104,9 @@ java -jar build/libs/crud-analyzer-all.jar
 ```
 
 ### 2. `出力ディレクトリ/crud.puml`
-PlantUML形式の関係図
+
+- PlantUML形式の関係図
+
 ```plantuml
 @startuml
 package "Controllers" {
@@ -131,8 +120,10 @@ package "Services" {
 @enduml
 ```
 
-### 3. `出力ディレクトリ/crud/analysis.json`
-詳細な解析結果（JSON形式）
+### 3. `出力ディレクトリ/analysis.json`
+
+- 詳細な解析結果（JSON形式）
+
 ```json
 {
   "endpoints": [...],
@@ -269,7 +260,7 @@ java -Djava.util.logging.level=FINE -jar build/libs/crud-analyzer-all.jar
 - **MyBatisXmlScanner**: MyBatis XML ファイルの解析（認知的複雑度最適化済み）
 - **MyBatisAnnotationScanner**: MyBatis アノテーションベースマッパーの解析
 - **MyBatisGeneratorScanner**: MyBatis Generator 生成コードの解析
-- **ClasspathMyBatisScanner**: 外部JAR内のMyBatisマッピング解析
+- **MyBatisClasspathScanner**: 外部JAR内のMyBatisマッピング解析
 - **BatchJobScanner**: Spring Batch ジョブ定義の解析
 - **SqlClassifier**: SQL文の分類とテーブル抽出（JSqlParser + 正規表現フォールバック）
 - **出力モジュール**: Markdown, PlantUML, JSON形式での出力
