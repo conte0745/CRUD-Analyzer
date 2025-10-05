@@ -25,6 +25,8 @@ replay_pid*
 /.project
 /.classpath
 .metadata/
+!/.vscode/extensions.json
+!/.vscode/settings.json
 
 # OS
 .DS_Store

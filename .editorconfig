@@ -1,0 +1,52 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+# 2 space indentation for most files
+[*]
+indent_style = space
+indent_size = 2
+
+# Java files - 4 spaces (Java convention)
+[*.java]
+indent_size = 4
+
+# Kotlin files - 4 spaces (Kotlin convention)
+[*.{kt,kts}]
+indent_size = 4
+
+# Gradle files - 4 spaces
+[*.gradle]
+indent_size = 4
+
+# XML files - 2 spaces
+[*.xml]
+indent_size = 2
+
+# JSON files - 2 spaces
+[*.json]
+indent_size = 2
+
+# YAML files - 2 spaces
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown files - 2 spaces
+[*.md]
+indent_size = 2
+
+# Properties files - no trailing whitespace trimming
+[*.properties]
+trim_trailing_whitespace = false
+
+# Makefiles - use tabs
+[Makefile]
+indent_style = tab
