@@ -1,0 +1,60 @@
+package com.example.view.controller;
+
+import com.example.view.view.OrderView;
+import com.example.view.view.CustomerView;
+import com.example.view.model.Order;
+import com.example.view.model.Customer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/orders")
+public class OrderController {
+
+    @Autowired
+    private OrderView orderView;
+
+    @Autowired
+    private CustomerView customerView;
+
+    @GetMapping
+    public List<Order> getAllOrders() {
+        return orderView.findAllOrders();
+    }
+
+    @GetMapping("/{id}")
+    public Order getOrder(@PathVariable Long id) {
+        return orderView.findOrderById(id);
+    }
+
+    @GetMapping("/customer/{customerId}")
+    public List<Order> getOrdersByCustomer(@PathVariable Long customerId) {
+        return orderView.findOrdersByCustomerId(customerId);
+    }
+
+    @PostMapping
+    public Order createOrder(@RequestBody Order order) {
+        return orderView.createOrder(order);
+    }
+
+    @PutMapping("/{id}")
+    public Order updateOrder(@PathVariable Long id, @RequestBody Order order) {
+        return orderView.updateOrder(id, order);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteOrder(@PathVariable Long id) {
+        orderView.deleteOrder(id);
+    }
+
+    @GetMapping("/customers")
+    public List<Customer> getAllCustomers() {
+        return customerView.findAllCustomers();
+    }
+
+    @GetMapping("/customers/{id}")
+    public Customer getCustomer(@PathVariable Long id) {
+        return customerView.findCustomerById(id);
+    }
+}

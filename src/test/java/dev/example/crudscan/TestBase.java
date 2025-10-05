@@ -8,8 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-/** ユニットテストの基底クラス テストリソースファイルの取得機能とモック作成機能を提供 */
-public class UnitTestBase {
+/** テストの基底クラス テストリソースファイルの取得機能とモック作成機能を提供 */
+public class TestBase {
 
   /**
    * test/resources配下のファイルを指定されたディレクトリにコピーする
@@ -80,8 +80,8 @@ public class UnitTestBase {
    * @param jarDir JARファイルディレクトリ
    * @return モック化されたAnalyzerConfiguration
    */
-  protected AnalyzerConfiguration createMockAnalyzerConfigurationWithJarPath(
-      Path tempDir, Path jarDir) {
+  protected AnalyzerConfiguration createMockAnalyzerConfigurationWithJarPath(Path tempDir,
+      Path jarDir) {
     AnalyzerConfiguration mockConfig = mock(AnalyzerConfiguration.class);
 
     // JARパスを返すようにモック設定

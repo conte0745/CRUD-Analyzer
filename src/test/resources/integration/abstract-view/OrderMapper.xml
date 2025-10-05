@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.view.mapper.OrderMapper">
+
+    <select id="findAll" resultType="com.example.view.model.Order">
+        SELECT id, customer_id, product_name, quantity, total_amount, order_date
+        FROM orders
+        ORDER BY order_date DESC
+    </select>
+
+    <select id="findById" resultType="com.example.view.model.Order">
+        SELECT id, customer_id, product_name, quantity, total_amount, order_date
+        FROM orders
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByCustomerId" resultType="com.example.view.model.Order">
+        SELECT id, customer_id, product_name, quantity, total_amount, order_date
+        FROM orders
+        WHERE customer_id = #{customerId}
+        ORDER BY order_date DESC
+    </select>
+
+    <insert id="insert" parameterType="com.example.view.model.Order">
+        INSERT INTO orders (customer_id, product_name, quantity, total_amount, order_date)
+        VALUES (#{customerId}, #{productName}, #{quantity}, #{totalAmount}, NOW())
+    </insert>
+
+    <update id="update" parameterType="com.example.view.model.Order">
+        UPDATE orders
+        SET customer_id = #{customerId}, product_name = #{productName},
+            quantity = #{quantity}, total_amount = #{totalAmount}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM orders WHERE id = #{id}
+    </delete>
+
+</mapper>

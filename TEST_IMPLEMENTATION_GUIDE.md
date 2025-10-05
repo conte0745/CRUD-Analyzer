@@ -22,7 +22,7 @@ CRUD Analyzerプロジェクトでのテスト実装の標準化ガイド
 ```java
 /** {TargetClass}のテストクラス */
 @DisplayName("{TargetClass}機能のテスト")
-class {TargetClass}Test extends UnitTestBase {
+class {TargetClass}Test extends TestBase {
 
   private {TargetClass} target;
 
@@ -50,7 +50,7 @@ class {TargetClass}Test extends UnitTestBase {
 
 ### テスト継承階層
 
-- **UnitTestBase**: すべてのユニットテストの基底クラス
+- **TestBase**: すべてのユニットテストの基底クラス
   - 共通のテストユーティリティメソッドを提供
   - テストリソースの管理機能
   - ファイル操作のヘルパーメソッド
@@ -63,7 +63,7 @@ class {TargetClass}Test extends UnitTestBase {
 
 ### テストメソッド名
 - **パターン**: `test{MethodName}_{Condition}_{ExpectedResult}`
-- **例**: 
+- **例**:
   - `testClassify_WithValidSql_ShouldReturnCorrectInfo`
   - `testScan_WithEmptyDirectory_ShouldReturnEmptyList`
   - `testWrite_WithNullInput_ShouldThrowException`
@@ -78,10 +78,10 @@ class {TargetClass}Test extends UnitTestBase {
 void testClassify_WithValidSql_ShouldReturnCorrectInfo() {
   // Given - テストデータの準備
   String sql = "SELECT * FROM users WHERE id = 1";
-  
+
   // When - テスト対象メソッドの実行
   SqlClassifier.Info result = classifier.classify(sql);
-  
+
   // Then - 結果の検証
   assertThat(result).isNotNull();
   assertThat(result.op()).isEqualTo("SELECT");
@@ -147,8 +147,8 @@ src/test/resources/
 private void createTestXmlFile() throws Exception {
   Path mapperDir = tempDir.resolve("mapper");
   copyTestResource(
-      "mybatis/MyBatisXmlScannerTest/UserMapper.xml", 
-      mapperDir, 
+      "mybatis/MyBatisXmlScannerTest/UserMapper.xml",
+      mapperDir,
       "UserMapper.xml");
 }
 
@@ -167,8 +167,8 @@ private List<Endpoint> createTestEndpoints() {
 
 ```java
 @DisplayName("CallGraphScanner機能のテスト")
-class CallGraphScannerTest extends UnitTestBase {
-  
+class CallGraphScannerTest extends TestBase {
+
   @Test
   @DisplayName("Javaファイルからメソッド呼び出し関係が正しく抽出されること")
   void testScan_WithJavaFiles_ShouldExtractCallRelations() {
@@ -181,8 +181,8 @@ class CallGraphScannerTest extends UnitTestBase {
 
 ```java
 @DisplayName("MyBatisXmlScanner機能のテスト")
-class MyBatisXmlScannerTest extends UnitTestBase {
-  
+class MyBatisXmlScannerTest extends TestBase {
+
   @Test
   @DisplayName("複雑なSQLクエリからテーブル名が正しく抽出されること")
   void testScan_WithComplexQueries_ShouldExtractTables() {
@@ -196,7 +196,7 @@ class MyBatisXmlScannerTest extends UnitTestBase {
 ```java
 @DisplayName("MarkdownWriter機能のテスト")
 class MarkdownWriterTest {
-  
+
   @Test
   @DisplayName("CRUDマトリクスが正しいMarkdown形式で出力されること")
   void testWriteMatrix_WithValidData_ShouldCreateCorrectMarkdownTable() {
@@ -210,15 +210,15 @@ class MarkdownWriterTest {
 ### リソースファイルの命名規則
 
 - **パターン**: `{TestClass}/{TestScenario}.{extension}`
-- **例**: 
+- **例**:
   - `MyBatisXmlScannerTest/UserMapper.xml`
   - `MyBatisAnnotationScannerTest/CompleteAnnotationMapper.java.txt`
 
 ### リソースコピーの標準化
 
 ```java
-/** UnitTestBaseで提供されるヘルパーメソッド */
-protected void copyTestResource(String resourcePath, Path targetDir, String fileName) 
+/** TestBaseで提供されるヘルパーメソッド */
+protected void copyTestResource(String resourcePath, Path targetDir, String fileName)
     throws Exception {
   // リソースファイルを一時ディレクトリにコピー
 }
@@ -241,10 +241,10 @@ private ExternalService externalService;
 void testMethod_WithExternalService_ShouldHandleCorrectly() {
   // Given
   when(externalService.call()).thenReturn("expected_result");
-  
+
   // When
   String result = target.processWithExternalService();
-  
+
   // Then
   assertThat(result).isEqualTo("processed_expected_result");
   verify(externalService).call();

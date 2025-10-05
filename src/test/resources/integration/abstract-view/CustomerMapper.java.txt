@@ -1,0 +1,16 @@
+package com.example.view.mapper;
+
+import com.example.view.model.Customer;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import java.util.List;
+
+@Mapper
+public interface CustomerMapper {
+    List<Customer> findAll();
+    Customer findById(@Param("id") Long id);
+    List<Customer> findByEmail(@Param("email") String email);
+    void insert(Customer customer);
+    void update(Customer customer);
+    void deleteById(@Param("id") Long id);
+}

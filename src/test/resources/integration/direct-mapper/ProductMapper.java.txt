@@ -1,0 +1,17 @@
+package com.example.direct.mapper;
+
+import com.example.direct.model.Product;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import java.util.List;
+
+@Mapper
+public interface ProductMapper {
+    List<Product> findAll();
+    Product findById(@Param("id") Long id);
+    List<Product> findByCategory(@Param("category") String category);
+    void insert(Product product);
+    void update(Product product);
+    void deleteById(@Param("id") Long id);
+    void deleteByCategory(@Param("category") String category);
+}

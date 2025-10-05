@@ -1,0 +1,41 @@
+package com.example.view.service;
+
+import com.example.view.mapper.CustomerMapper;
+import com.example.view.model.Customer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+public class CustomerService {
+
+    @Autowired
+    private CustomerMapper customerMapper;
+
+    public List<Customer> findAll() {
+        return customerMapper.findAll();
+    }
+
+    public Customer findById(Long id) {
+        return customerMapper.findById(id);
+    }
+
+    public Customer save(Customer customer) {
+        customerMapper.insert(customer);
+        return customer;
+    }
+
+    public Customer update(Long id, Customer customer) {
+        customer.setId(id);
+        customerMapper.update(customer);
+        return customer;
+    }
+
+    public void delete(Long id) {
+        customerMapper.deleteById(id);
+    }
+
+    public List<Customer> findByEmail(String email) {
+        return customerMapper.findByEmail(email);
+    }
+}

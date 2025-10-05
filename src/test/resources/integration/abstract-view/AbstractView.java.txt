@@ -1,0 +1,9 @@
+package com.example.view.view;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public abstract class AbstractView {
+    protected abstract void initializeView();
+    protected abstract void refreshData();
+}

@@ -1,0 +1,50 @@
+package com.example.view.view;
+
+import com.example.view.service.CustomerService;
+import com.example.view.model.Customer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import java.util.List;
+
+@Component
+public class CustomerView extends AbstractView {
+
+    @Autowired
+    private CustomerService customerService;
+
+    @Override
+    protected void initializeView() {
+        // View initialization logic
+    }
+
+    @Override
+    protected void refreshData() {
+        // Data refresh logic
+    }
+
+    public List<Customer> findAllCustomers() {
+        refreshData();
+        return customerService.findAll();
+    }
+
+    public Customer findCustomerById(Long id) {
+        return customerService.findById(id);
+    }
+
+    public Customer createCustomer(Customer customer) {
+        Customer created = customerService.save(customer);
+        refreshData();
+        return created;
+    }
+
+    public Customer updateCustomer(Long id, Customer customer) {
+        Customer updated = customerService.update(id, customer);
+        refreshData();
+        return updated;
+    }
+
+    public void deleteCustomer(Long id) {
+        customerService.delete(id);
+        refreshData();
+    }
+}

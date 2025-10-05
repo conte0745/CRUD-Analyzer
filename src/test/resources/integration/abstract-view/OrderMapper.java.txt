@@ -1,0 +1,16 @@
+package com.example.view.mapper;
+
+import com.example.view.model.Order;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import java.util.List;
+
+@Mapper
+public interface OrderMapper {
+    List<Order> findAll();
+    Order findById(@Param("id") Long id);
+    List<Order> findByCustomerId(@Param("customerId") Long customerId);
+    void insert(Order order);
+    void update(Order order);
+    void deleteById(@Param("id") Long id);
+}

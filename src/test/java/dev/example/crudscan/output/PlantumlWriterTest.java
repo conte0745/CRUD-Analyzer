@@ -2,7 +2,7 @@ package dev.example.crudscan.output;
 
 import static org.assertj.core.api.Assertions.*;
 
-import dev.example.crudscan.UnitTestBase;
+import dev.example.crudscan.TestBase;
 import dev.example.crudscan.model.Models.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,11 +14,12 @@ import org.junit.jupiter.api.io.TempDir;
 
 /** PlantumlWriterのテストクラス */
 @DisplayName("PlantumlWriter機能のテスト")
-class PlantumlWriterTest extends UnitTestBase {
+class PlantumlWriterTest extends TestBase {
 
   private PlantumlWriter writer;
 
-  @TempDir Path tempDir;
+  @TempDir
+  Path tempDir;
 
   @BeforeEach
   void setUp() {
@@ -65,14 +66,8 @@ class PlantumlWriterTest extends UnitTestBase {
     assertThat(outputFile).exists();
     String content = Files.readString(outputFile);
 
-    assertThat(content)
-        .startsWith("@startuml")
-        .endsWith("@enduml\n")
-        .contains("actor User")
-        .contains("UserController")
-        .contains("GET /users")
-        .contains("users")
-        .contains("SELECT");
+    assertThat(content).startsWith("@startuml").endsWith("@enduml\n").contains("actor User")
+        .contains("UserController").contains("GET /users").contains("users").contains("SELECT");
   }
 
   @Test
@@ -91,12 +86,8 @@ class PlantumlWriterTest extends UnitTestBase {
     assertThat(outputFile).exists();
     String content = Files.readString(outputFile);
 
-    assertThat(content)
-        .startsWith("@startuml")
-        .endsWith("@enduml\n")
-        .contains("participant Scheduler")
-        .contains("DataProcessJob")
-        .contains("trigger");
+    assertThat(content).startsWith("@startuml").endsWith("@enduml\n")
+        .contains("participant Scheduler").contains("DataProcessJob").contains("trigger");
   }
 
   @Test
@@ -115,13 +106,8 @@ class PlantumlWriterTest extends UnitTestBase {
     assertThat(outputFile).exists();
     String content = Files.readString(outputFile);
 
-    assertThat(content)
-        .startsWith("@startuml")
-        .endsWith("@enduml\n")
-        .contains("actor User")
-        .contains("participant Scheduler")
-        .contains("UserController")
-        .contains("DataProcessJob");
+    assertThat(content).startsWith("@startuml").endsWith("@enduml\n").contains("actor User")
+        .contains("participant Scheduler").contains("UserController").contains("DataProcessJob");
   }
 
   @Test
@@ -195,66 +181,40 @@ class PlantumlWriterTest extends UnitTestBase {
 
   /** サンプル呼び出し関係を作成 */
   private List<CallEdge> createSampleCallEdges() {
-    return List.of(
-        new CallEdge(
-            "com.example.batch.DataProcessJob", "execute",
-            "com.example.service.UserService", "processUsers"));
+    return List.of(new CallEdge("com.example.batch.DataProcessJob", "execute",
+        "com.example.service.UserService", "processUsers"));
   }
 
   /** 大量のCRUDリンクを作成 */
   private List<CrudLink> createManyLinks() {
     return List.of(
-        new CrudLink(
-            new Endpoint("GET", "/path1", "Controller1", "method1", "com.example"),
-            "table1",
-            "SELECT"),
-        new CrudLink(
-            new Endpoint("POST", "/path2", "Controller2", "method2", "com.example"),
-            "table2",
-            "INSERT"),
-        new CrudLink(
-            new Endpoint("PUT", "/path3", "Controller3", "method3", "com.example"),
-            "table3",
-            "UPDATE"),
-        new CrudLink(
-            new Endpoint("DELETE", "/path4", "Controller4", "method4", "com.example"),
-            "table4",
-            "DELETE"),
-        new CrudLink(
-            new Endpoint("GET", "/path5", "Controller5", "method5", "com.example"),
-            "table5",
-            "SELECT"),
-        new CrudLink(
-            new Endpoint("POST", "/path6", "Controller6", "method6", "com.example"),
-            "table6",
-            "INSERT"),
-        new CrudLink(
-            new Endpoint("PUT", "/path7", "Controller7", "method7", "com.example"),
-            "table7",
-            "UPDATE"),
-        new CrudLink(
-            new Endpoint("DELETE", "/path8", "Controller8", "method8", "com.example"),
-            "table8",
-            "DELETE"),
-        new CrudLink(
-            new Endpoint("GET", "/path9", "Controller9", "method9", "com.example"),
-            "table9",
-            "SELECT"),
-        new CrudLink(
-            new Endpoint("POST", "/path10", "Controller10", "method10", "com.example"),
-            "table10",
-            "INSERT"));
+        new CrudLink(new Endpoint("GET", "/path1", "Controller1", "method1", "com.example"),
+            "table1", "SELECT"),
+        new CrudLink(new Endpoint("POST", "/path2", "Controller2", "method2", "com.example"),
+            "table2", "INSERT"),
+        new CrudLink(new Endpoint("PUT", "/path3", "Controller3", "method3", "com.example"),
+            "table3", "UPDATE"),
+        new CrudLink(new Endpoint("DELETE", "/path4", "Controller4", "method4", "com.example"),
+            "table4", "DELETE"),
+        new CrudLink(new Endpoint("GET", "/path5", "Controller5", "method5", "com.example"),
+            "table5", "SELECT"),
+        new CrudLink(new Endpoint("POST", "/path6", "Controller6", "method6", "com.example"),
+            "table6", "INSERT"),
+        new CrudLink(new Endpoint("PUT", "/path7", "Controller7", "method7", "com.example"),
+            "table7", "UPDATE"),
+        new CrudLink(new Endpoint("DELETE", "/path8", "Controller8", "method8", "com.example"),
+            "table8", "DELETE"),
+        new CrudLink(new Endpoint("GET", "/path9", "Controller9", "method9", "com.example"),
+            "table9", "SELECT"),
+        new CrudLink(new Endpoint("POST", "/path10", "Controller10", "method10", "com.example"),
+            "table10", "INSERT"));
   }
 
   /** 大量のバッチJobを作成 */
   private List<BatchJob> createManyBatchJobs() {
-    return List.of(
-        new BatchJob("Job1", "Job1", "package1"),
-        new BatchJob("Job2", "Job2", "package2"),
-        new BatchJob("Job3", "Job3", "package3"),
-        new BatchJob("Job4", "Job4", "package4"),
-        new BatchJob("Job5", "Job5", "package5"),
-        new BatchJob("Job6", "Job6", "package6"),
-        new BatchJob("Job7", "Job7", "package7"));
+    return List.of(new BatchJob("Job1", "Job1", "package1"),
+        new BatchJob("Job2", "Job2", "package2"), new BatchJob("Job3", "Job3", "package3"),
+        new BatchJob("Job4", "Job4", "package4"), new BatchJob("Job5", "Job5", "package5"),
+        new BatchJob("Job6", "Job6", "package6"), new BatchJob("Job7", "Job7", "package7"));
   }
 }

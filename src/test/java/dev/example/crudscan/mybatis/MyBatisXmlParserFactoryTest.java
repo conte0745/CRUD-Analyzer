@@ -2,7 +2,7 @@ package dev.example.crudscan.mybatis;
 
 import static org.assertj.core.api.Assertions.*;
 
-import dev.example.crudscan.UnitTestBase;
+import dev.example.crudscan.TestBase;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -13,7 +13,7 @@ import org.w3c.dom.Document;
 
 /** MyBatisXmlParserFactoryのテストクラス */
 @DisplayName("MyBatisXmlParserFactory機能のテスト")
-class MyBatisXmlParserFactoryTest extends UnitTestBase {
+class MyBatisXmlParserFactoryTest extends TestBase {
 
   @Test
   @DisplayName("MyBatisDocumentBuilderが正常に作成されること")
@@ -78,8 +78,9 @@ class MyBatisXmlParserFactoryTest extends UnitTestBase {
     // When & Then
     InputStream inputStream = new ByteArrayInputStream(invalidXml.getBytes());
 
-    assertThatThrownBy(() -> builder.parse(inputStream))
-        .isInstanceOf(Exception.class); // SAXException or similar
+    assertThatThrownBy(() -> builder.parse(inputStream)).isInstanceOf(Exception.class); // SAXException
+                                                                                        // or
+                                                                                        // similar
   }
 
   @Test

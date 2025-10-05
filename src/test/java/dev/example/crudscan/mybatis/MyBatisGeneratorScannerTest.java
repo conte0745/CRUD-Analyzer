@@ -2,7 +2,7 @@ package dev.example.crudscan.mybatis;
 
 import static org.assertj.core.api.Assertions.*;
 
-import dev.example.crudscan.UnitTestBase;
+import dev.example.crudscan.TestBase;
 import dev.example.crudscan.model.Models.SqlMapping;
 import java.nio.file.Path;
 import java.util.List;
@@ -13,11 +13,12 @@ import org.junit.jupiter.api.io.TempDir;
 
 /** MyBatisGeneratorScannerのテストクラス */
 @DisplayName("MyBatisGeneratorScanner機能のテスト")
-class MyBatisGeneratorScannerTest extends UnitTestBase {
+class MyBatisGeneratorScannerTest extends TestBase {
 
   private MyBatisGeneratorScanner scanner;
 
-  @TempDir Path tempDir;
+  @TempDir
+  Path tempDir;
 
   @BeforeEach
   void setUp() {
@@ -65,9 +66,7 @@ class MyBatisGeneratorScannerTest extends UnitTestBase {
   void testScan_WithDynamicSqlElements_ShouldExtractMappings() throws Exception {
     // Given - 動的SQL要素を含むマッパーXMLファイルをコピー
     Path mapperDir = tempDir.resolve("mapper");
-    copyTestResource(
-        "mybatis/MyBatisGeneratorScannerTest/DynamicSqlMapper.xml",
-        mapperDir,
+    copyTestResource("mybatis/MyBatisGeneratorScannerTest/DynamicSqlMapper.xml", mapperDir,
         "DynamicSqlMapper.xml");
 
     // When
@@ -77,13 +76,10 @@ class MyBatisGeneratorScannerTest extends UnitTestBase {
     assertThat(result).isNotNull().isNotEmpty();
 
     // 動的SQL要素を含むメソッドが検出される
-    boolean hasDynamicSqlMethods =
-        result.stream()
-            .anyMatch(
-                mapping ->
-                    mapping.mapperMethod().equals("findUsersDynamic")
-                        || mapping.mapperMethod().equals("updateSelective")
-                        || mapping.mapperMethod().equals("findUsersWithRelations"));
+    boolean hasDynamicSqlMethods = result.stream()
+        .anyMatch(mapping -> mapping.mapperMethod().equals("findUsersDynamic")
+            || mapping.mapperMethod().equals("updateSelective")
+            || mapping.mapperMethod().equals("findUsersWithRelations"));
     assertThat(hasDynamicSqlMethods).isTrue();
 
     // テーブル名が正しく抽出される
@@ -96,9 +92,7 @@ class MyBatisGeneratorScannerTest extends UnitTestBase {
   void testScan_WithNonGeneratedXml_ShouldHandleGracefully() throws Exception {
     // Given - 通常のマッパーXMLファイルをコピー
     Path mapperDir = tempDir.resolve("mapper");
-    copyTestResource(
-        "mybatis/MyBatisGeneratorScannerTest/NonGeneratedMapper.xml",
-        mapperDir,
+    copyTestResource("mybatis/MyBatisGeneratorScannerTest/NonGeneratedMapper.xml", mapperDir,
         "NonGeneratedMapper.xml");
 
     // When
@@ -109,11 +103,8 @@ class MyBatisGeneratorScannerTest extends UnitTestBase {
     assertThat(result).isNotNull().isEmpty(); // このスキャナーはGenerator特有の機能に特化しているため
 
     // Generator特有のメソッド名（ByExample等）は含まれない
-    boolean hasGeneratorMethods =
-        result.stream()
-            .anyMatch(
-                mapping ->
-                    mapping.mapperMethod().matches(".*(ByExample|ByPrimaryKey|Selective).*"));
+    boolean hasGeneratorMethods = result.stream().anyMatch(
+        mapping -> mapping.mapperMethod().matches(".*(ByExample|ByPrimaryKey|Selective).*"));
     assertThat(hasGeneratorMethods).isFalse();
   }
 

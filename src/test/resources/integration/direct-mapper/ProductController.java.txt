@@ -1,0 +1,51 @@
+package com.example.direct.controller;
+
+import com.example.direct.mapper.ProductMapper;
+import com.example.direct.model.Product;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/products")
+public class ProductController {
+
+    @Autowired
+    private ProductMapper productMapper;
+
+    @GetMapping
+    public List<Product> getAllProducts() {
+        return productMapper.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Product getProduct(@PathVariable Long id) {
+        return productMapper.findById(id);
+    }
+
+    @GetMapping("/category/{category}")
+    public List<Product> getProductsByCategory(@PathVariable String category) {
+        return productMapper.findByCategory(category);
+    }
+
+    @PostMapping
+    public void createProduct(@RequestBody Product product) {
+        productMapper.insert(product);
+    }
+
+    @PutMapping("/{id}")
+    public void updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        product.setId(id);
+        productMapper.update(product);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable Long id) {
+        productMapper.deleteById(id);
+    }
+
+    @DeleteMapping("/category/{category}")
+    public void deleteProductsByCategory(@PathVariable String category) {
+        productMapper.deleteByCategory(category);
+    }
+}
